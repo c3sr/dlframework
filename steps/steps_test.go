@@ -8,8 +8,8 @@ import (
 	"github.com/k0kubun/pp"
 
 	"github.com/rai-project/config"
-	dl "github.com/rai-project/dlframework"
-	"github.com/rai-project/dlframework/framework/predictor"
+	dl "github.com/c3sr/dlframework"
+	"github.com/c3sr/dlframework/framework/predictor"
 	"github.com/rai-project/image"
 	"github.com/rai-project/image/types"
 	"github.com/rai-project/pipeline"

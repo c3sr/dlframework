@@ -1,6 +1,6 @@
 package server
 
-import "github.com/rai-project/dlframework"
+import "github.com/c3sr/dlframework"
 
 var (
 	framework dlframework.FrameworkManifest

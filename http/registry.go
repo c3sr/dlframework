@@ -8,10 +8,10 @@ import (
 	"github.com/Masterminds/semver"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/pkg/errors"
-	dl "github.com/rai-project/dlframework"
-	webmodels "github.com/rai-project/dlframework/httpapi/models"
-	"github.com/rai-project/dlframework/httpapi/restapi/operations/registry"
-	"github.com/rai-project/dlframework/registryquery"
+	dl "github.com/c3sr/dlframework"
+	webmodels "github.com/c3sr/dlframework/httpapi/models"
+	"github.com/c3sr/dlframework/httpapi/restapi/operations/registry"
+	"github.com/c3sr/dlframework/registryquery"
 )
 
 func getParam(val *string, defaultValue string) string {

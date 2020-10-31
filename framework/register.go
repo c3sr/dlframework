@@ -6,7 +6,7 @@ import (
 	"github.com/Masterminds/semver"
 	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/pkg/errors"
-	"github.com/rai-project/dlframework"
+	"github.com/c3sr/dlframework"
 	yaml "gopkg.in/yaml.v2"
 )
 

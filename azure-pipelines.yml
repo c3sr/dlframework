@@ -15,25 +15,25 @@ jobs:
           cd dockerfiles/base
           make docker_build_gpu
           ./push.sh docker_push_gpu
-  - job: CPU_MLPerf
-    timeoutInMinutes: 0
-    steps:
-      - bash: |
-          docker login -u $(DOCKER_USERNAME) -p $(DOCKER_PASSWORD)
-          cd dockerfiles/base
-          make docker_build_cpu_mlperf
-          ./push.sh docker_push_cpu_mlperf
-  - job: GPU_MLPerf
-    timeoutInMinutes: 0
-    steps:
-      - bash: |
-          docker login -u $(DOCKER_USERNAME) -p $(DOCKER_PASSWORD)
-          cd dockerfiles/base
-          make docker_build_gpu_mlperf
-          ./push.sh docker_push_gpu_mlperf
-  - job: Update_Microbadger
-    dependsOn:
-      - CPU
-      - GPU
-    steps:
-      - script: 'curl -X POST https://hooks.microbadger.com/images/carml/base/Y5oB6PYl8maUalSeWfNjOOUELjw='
+#  - job: CPU_MLPerf
+#    timeoutInMinutes: 0
+#    steps:
+#      - bash: |
+#          docker login -u $(DOCKER_USERNAME) -p $(DOCKER_PASSWORD)
+#          cd dockerfiles/base
+#          make docker_build_cpu_mlperf
+#          ./push.sh docker_push_cpu_mlperf
+#  - job: GPU_MLPerf
+#    timeoutInMinutes: 0
+#    steps:
+#      - bash: |
+#          docker login -u $(DOCKER_USERNAME) -p $(DOCKER_PASSWORD)
+#          cd dockerfiles/base
+#          make docker_build_gpu_mlperf
+#          ./push.sh docker_push_gpu_mlperf
+#  - job: Update_Microbadger
+#    dependsOn:
+#      - CPU
+#      - GPU
+#    steps:
+#      - script: 'curl -X POST https://hooks.microbadger.com/images/carml/base/Y5oB6PYl8maUalSeWfNjOOUELjw='

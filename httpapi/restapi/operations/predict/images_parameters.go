@@ -13,7 +13,7 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 
-	models "github.com/rai-project/dlframework/httpapi/models"
+	models "github.com/c3sr/dlframework/httpapi/models"
 )
 
 // NewImagesParams creates a new ImagesParams object

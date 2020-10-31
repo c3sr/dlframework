@@ -6,7 +6,7 @@ import (
 	"github.com/oliamb/cutter"
 	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
-	"github.com/rai-project/dlframework/framework/predictor"
+	"github.com/c3sr/dlframework/framework/predictor"
 	"github.com/rai-project/image/types"
 	"github.com/rai-project/pipeline"
 	"github.com/rai-project/tracer"

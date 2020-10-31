@@ -11,9 +11,9 @@ import (
 
 	strfmt "github.com/go-openapi/strfmt"
 
-	"github.com/rai-project/dlframework/httpapi/client/authentication"
-	"github.com/rai-project/dlframework/httpapi/client/predict"
-	"github.com/rai-project/dlframework/httpapi/client/registry"
+	"github.com/c3sr/dlframework/httpapi/client/authentication"
+	"github.com/c3sr/dlframework/httpapi/client/predict"
+	"github.com/c3sr/dlframework/httpapi/client/registry"
 )
 
 // Default dlframework HTTP client.

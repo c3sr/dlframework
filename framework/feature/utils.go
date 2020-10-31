@@ -1,7 +1,7 @@
 package feature
 
 import (
-	"github.com/rai-project/dlframework"
+	"github.com/c3sr/dlframework"
 )
 
 func isUnknownType(o *dlframework.Feature) bool {

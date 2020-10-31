@@ -1,4 +1,4 @@
-package: github.com/rai-project/dlframework
+package: github.com/c3sr/dlframework
 import:
 - package: github.com/Masterminds/semver
   version: ^1.4.0

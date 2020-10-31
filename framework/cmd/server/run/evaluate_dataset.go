@@ -17,8 +17,8 @@ import (
 	shellwords "github.com/junegunn/go-shellwords"
 	"github.com/rai-project/config"
 	"github.com/rai-project/cpu/cpuid"
-	dl "github.com/rai-project/dlframework"
-	dlcmd "github.com/rai-project/dlframework/framework/cmd"
+	dl "github.com/c3sr/dlframework"
+	dlcmd "github.com/c3sr/dlframework/framework/cmd"
 	"github.com/sirupsen/logrus"
 
 	_ "github.com/rai-project/logger/hooks"

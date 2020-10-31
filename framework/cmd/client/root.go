@@ -9,7 +9,7 @@ import (
 	shutdown "github.com/klauspost/shutdown2"
 	raicmd "github.com/rai-project/cmd"
 	"github.com/rai-project/config"
-	"github.com/rai-project/dlframework/framework/cmd"
+	"github.com/c3sr/dlframework/framework/cmd"
 	evaluations "github.com/rai-project/evaluation/cmd"
 	"github.com/rai-project/tracer"
 	"github.com/sirupsen/logrus"

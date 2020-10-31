@@ -16,7 +16,7 @@ import (
 
 	strfmt "github.com/go-openapi/strfmt"
 
-	models "github.com/rai-project/dlframework/httpapi/models"
+	models "github.com/c3sr/dlframework/httpapi/models"
 )
 
 // NewURLsParams creates a new URLsParams object

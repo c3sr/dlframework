@@ -5,8 +5,8 @@ import (
 
 	"context"
 
-	"github.com/rai-project/dlframework"
-	"github.com/rai-project/dlframework/framework/options"
+	"github.com/c3sr/dlframework"
+	"github.com/c3sr/dlframework/framework/options"
 )
 
 type Predictor interface {

@@ -13,7 +13,7 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 
-	models "github.com/rai-project/dlframework/httpapi/models"
+	models "github.com/c3sr/dlframework/httpapi/models"
 )
 
 // NewResetParams creates a new ResetParams object

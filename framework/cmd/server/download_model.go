@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/pkg/errors"
-	"github.com/rai-project/dlframework/framework/agent"
-	dlcmd "github.com/rai-project/dlframework/framework/cmd"
+	"github.com/c3sr/dlframework/framework/agent"
+	dlcmd "github.com/c3sr/dlframework/framework/cmd"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 )

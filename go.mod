@@ -1,4 +1,4 @@
-module github.com/rai-project/dlframework
+module github.com/c3sr/dlframework
 
 go 1.12
 

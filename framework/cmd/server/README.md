@@ -8,8 +8,8 @@ One can run evaluations across different frameworks and models or on a single fr
 
 ### Running Evaluations on all Frameworks / Models
 
-[evaluate.go](https://github.com/rai-project/dlframework/blob/master/framework/cmd/server/run/evaluate.go) is a wrapper tool exists to make it easier to run evaluations across frameworks and models.
-One can specify the [frameworks, models, and batch sizes](https://github.com/rai-project/dlframework/blob/master/framework/cmd/server/evaluate.go#L31-L72) to use within the file and then run evaluate.go.
+[evaluate.go](https://github.com/c3sr/dlframework/blob/master/framework/cmd/server/run/evaluate.go) is a wrapper tool exists to make it easier to run evaluations across frameworks and models.
+One can specify the [frameworks, models, and batch sizes](https://github.com/c3sr/dlframework/blob/master/framework/cmd/server/evaluate.go#L31-L72) to use within the file and then run evaluate.go.
 
 - [ ]: TODO: allow one to specify the frameworks, models, and batch sizes from the command line
 

@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"github.com/rai-project/dlframework"
+	"github.com/c3sr/dlframework"
 	"github.com/rai-project/downloadmanager"
 )
 

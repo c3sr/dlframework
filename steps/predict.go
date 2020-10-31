@@ -8,8 +8,8 @@ import (
 
 	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
-	"github.com/rai-project/dlframework/framework/options"
-	"github.com/rai-project/dlframework/framework/predictor"
+	"github.com/c3sr/dlframework/framework/options"
+	"github.com/c3sr/dlframework/framework/predictor"
 	"github.com/rai-project/pipeline"
 	"github.com/rai-project/tracer"
 	"gorgonia.org/tensor"

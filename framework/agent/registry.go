@@ -2,7 +2,7 @@ package agent
 
 import (
 	context "context"
-	dl "github.com/rai-project/dlframework"
+	dl "github.com/c3sr/dlframework"
 )
 
 type Registry struct {

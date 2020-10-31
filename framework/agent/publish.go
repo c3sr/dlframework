@@ -12,7 +12,7 @@ import (
 	nvidiasmi "github.com/rai-project/nvidia-smi"
 
 	"github.com/rai-project/config"
-	dl "github.com/rai-project/dlframework"
+	dl "github.com/c3sr/dlframework"
 	store "github.com/rai-project/libkv/store"
 	lock "github.com/rai-project/lock/registry"
 	"github.com/rai-project/registry"

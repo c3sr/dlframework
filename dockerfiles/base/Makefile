@@ -7,7 +7,7 @@ push: docker_push output ## Push Docker image
 release: docker_build docker_push ## Build and push Docker image
 
 # Image and binary can be overidden with env vars.
-DOCKER_IMAGE ?= carml/base
+DOCKER_IMAGE ?= c3sr/base
 
 
 # Get System architecture

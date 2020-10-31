@@ -10,7 +10,7 @@ import (
 
 	middleware "github.com/go-openapi/runtime/middleware"
 
-	models "github.com/rai-project/dlframework/httpapi/models"
+	models "github.com/c3sr/dlframework/httpapi/models"
 )
 
 // UpdateHandlerFunc turns a function with the right signature into a update handler

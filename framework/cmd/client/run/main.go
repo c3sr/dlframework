@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/rai-project/dlframework/framework/cmd/client"
+	"github.com/c3sr/dlframework/framework/cmd/client"
 )
 
 func main() {

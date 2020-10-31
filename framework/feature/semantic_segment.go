@@ -1,6 +1,6 @@
 package feature
 
-import "github.com/rai-project/dlframework"
+import "github.com/c3sr/dlframework"
 
 func SemanticSegmentType() Option {
 	return Type(dlframework.FeatureType_SEMANTICSEGMENT)

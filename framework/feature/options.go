@@ -1,7 +1,7 @@
 package feature
 
 import (
-	"github.com/rai-project/dlframework"
+	"github.com/c3sr/dlframework"
 	"github.com/spf13/cast"
 )
 

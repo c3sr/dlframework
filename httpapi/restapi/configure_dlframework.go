@@ -10,12 +10,12 @@ import (
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
 
-	"github.com/rai-project/dlframework/httpapi/restapi/operations"
-	"github.com/rai-project/dlframework/httpapi/restapi/operations/authentication"
-	"github.com/rai-project/dlframework/httpapi/restapi/operations/predict"
-	"github.com/rai-project/dlframework/httpapi/restapi/operations/registry"
+	"github.com/c3sr/dlframework/httpapi/restapi/operations"
+	"github.com/c3sr/dlframework/httpapi/restapi/operations/authentication"
+	"github.com/c3sr/dlframework/httpapi/restapi/operations/predict"
+	"github.com/c3sr/dlframework/httpapi/restapi/operations/registry"
 
-	models "github.com/rai-project/dlframework/httpapi/models"
+	models "github.com/c3sr/dlframework/httpapi/models"
 )
 
 //go:generate swagger generate server --target ../../httpapi --name Dlframework --spec ../../dlframework.swagger.json --principal models.User

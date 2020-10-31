@@ -11,8 +11,8 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/rai-project/config"
-	dl "github.com/rai-project/dlframework"
-	webmodels "github.com/rai-project/dlframework/httpapi/models"
+	dl "github.com/c3sr/dlframework"
+	webmodels "github.com/c3sr/dlframework/httpapi/models"
 	store "github.com/rai-project/libkv/store"
 	"github.com/rai-project/parallel/tunny"
 	kv "github.com/rai-project/registry"

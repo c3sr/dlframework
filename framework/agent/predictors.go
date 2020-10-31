@@ -4,8 +4,8 @@ import (
 	"sync"
 
 	"github.com/pkg/errors"
-	dl "github.com/rai-project/dlframework"
-	"github.com/rai-project/dlframework/framework/predictor"
+	dl "github.com/c3sr/dlframework"
+	"github.com/c3sr/dlframework/framework/predictor"
 	"golang.org/x/sync/syncmap"
 )
 

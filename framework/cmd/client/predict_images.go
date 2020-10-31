@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 
 	"github.com/pkg/errors"
-	"github.com/rai-project/dlframework"
-	"github.com/rai-project/dlframework/registryquery"
+	"github.com/c3sr/dlframework"
+	"github.com/c3sr/dlframework/registryquery"
 	rgrpc "github.com/rai-project/grpc"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"

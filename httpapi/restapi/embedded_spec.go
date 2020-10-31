@@ -38,7 +38,7 @@ func init() {
     },
     "license": {
       "name": "NCSA/UIUC",
-      "url": "https://raw.githubusercontent.com/rai-project/dlframework/master/LICENSE.TXT"
+      "url": "https://raw.githubusercontent.com/c3sr/dlframework/master/LICENSE.TXT"
     },
     "version": "0.2.18"
   },
@@ -1409,7 +1409,7 @@ func init() {
     },
     "license": {
       "name": "NCSA/UIUC",
-      "url": "https://raw.githubusercontent.com/rai-project/dlframework/master/LICENSE.TXT"
+      "url": "https://raw.githubusercontent.com/c3sr/dlframework/master/LICENSE.TXT"
     },
     "version": "0.2.18"
   },

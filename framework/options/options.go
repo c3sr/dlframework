@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	dl "github.com/rai-project/dlframework"
+	dl "github.com/c3sr/dlframework"
 	nvidiasmi "github.com/rai-project/nvidia-smi"
 	"github.com/rai-project/tracer"
 )

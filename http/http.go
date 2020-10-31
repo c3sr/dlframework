@@ -4,11 +4,11 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/runtime"
-	"github.com/rai-project/dlframework/httpapi/restapi/operations"
-	"github.com/rai-project/dlframework/httpapi/models"
-	"github.com/rai-project/dlframework/httpapi/restapi/operations/authentication"
-	"github.com/rai-project/dlframework/httpapi/restapi/operations/predict"
-	"github.com/rai-project/dlframework/httpapi/restapi/operations/registry"
+	"github.com/c3sr/dlframework/httpapi/restapi/operations"
+	"github.com/c3sr/dlframework/httpapi/models"
+	"github.com/c3sr/dlframework/httpapi/restapi/operations/authentication"
+	"github.com/c3sr/dlframework/httpapi/restapi/operations/predict"
+	"github.com/c3sr/dlframework/httpapi/restapi/operations/registry"
 
 	"github.com/volatiletech/authboss/remember"
 )

@@ -19,8 +19,8 @@ import (
 
 	"github.com/rai-project/config"
 	"github.com/rai-project/cpu/cpuid"
-	dl "github.com/rai-project/dlframework"
-	dlcmd "github.com/rai-project/dlframework/framework/cmd"
+	dl "github.com/c3sr/dlframework"
+	dlcmd "github.com/c3sr/dlframework/framework/cmd"
 
 	_ "github.com/rai-project/logger/hooks"
 )

@@ -44,6 +44,7 @@ var (
 	baseDir                    string
 	gpuDeviceId                int
 	timeoutOptionSet           bool
+	saveInferenceResult        bool
 )
 
 var predictCmd = &cobra.Command{
@@ -107,6 +108,7 @@ func init() {
 	predictCmd.PersistentFlags().StringVar(&baseDir, "base_dir", "results", "the folder path to store the results. By default 'results' is used")
 	predictCmd.PersistentFlags().IntVar(&gpuDeviceId, "gpu_device_id", 0, "gpu device id to pass into nvidia-smi. Defatuls to 0.")
 	predictCmd.PersistentFlags().BoolVar(&timeoutOptionSet, "time_out", true, "kill the agent after an amount of time. Defaults to be false.")
+	predictCmd.PersistentFlags().BoolVar(&saveInferenceResult, "save_inference", false, "Saving inference result affects profiling on CPU. Defaults to be false.")
 
 	predictCmd.AddCommand(predictDatasetCmd)
 	predictCmd.AddCommand(predictUrlsCmd)

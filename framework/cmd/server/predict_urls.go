@@ -24,12 +24,12 @@ import (
 	"github.com/rai-project/archive"
 	"github.com/rai-project/database"
 	mongodb "github.com/rai-project/database/mongodb"
-	dl "github.com/c3sr/dlframework"
-	"github.com/c3sr/dlframework/framework/agent"
-	dlcmd "github.com/c3sr/dlframework/framework/cmd"
-	"github.com/c3sr/dlframework/framework/options"
-	common "github.com/c3sr/dlframework/framework/predictor"
-	"github.com/c3sr/dlframework/steps"
+	dl "github.com/rai-project/dlframework"
+	"github.com/rai-project/dlframework/framework/agent"
+	dlcmd "github.com/rai-project/dlframework/framework/cmd"
+	"github.com/rai-project/dlframework/framework/options"
+	common "github.com/rai-project/dlframework/framework/predictor"
+	"github.com/rai-project/dlframework/steps"
 	"github.com/rai-project/evaluation"
 	machine "github.com/rai-project/machine/info"
 	nvidiasmi "github.com/rai-project/nvidia-smi"
@@ -243,7 +243,7 @@ func runPredictUrlsCmd(c *cobra.Command, args []string) error {
 
 	urlParts := dl.PartitionStringList(urls, partitionListSize)
 
-	outputs := make(chan interface{}, DefaultChannelBuffer)
+	//	outputs := make(chan interface{}, DefaultChannelBuffer)
 	partlabels := map[string]string{}
 
 	log.WithField("model", modelName).
@@ -313,20 +313,20 @@ func runPredictUrlsCmd(c *cobra.Command, args []string) error {
 					log.WithError(err).Error("encountered an error while performing warmup inference")
 					os.Exit(-1)
 				}
-				outputs <- o
+				//				outputs <- o
 			}
 		}
 
-		close(outputs)
-		for range outputs {
-		}
+		//		close(outputs)
+		//		for range outputs {
+		//		}
 
 		tracer.SetLevel(traceLevel)
 
 		warmUpSpan.Finish()
 	}
 
-	outputs = make(chan interface{}, DefaultChannelBuffer)
+	outputs := make(chan interface{}, DefaultChannelBuffer)
 
 	if numUrlParts == -1 {
 		numUrlParts = len(urlParts)
@@ -405,7 +405,9 @@ func runPredictUrlsCmd(c *cobra.Command, args []string) error {
 				log.WithError(err).Error("encountered an error while performing inference")
 				os.Exit(-1)
 			}
-			outputs <- o
+			if saveInferenceResult {
+				outputs <- o
+			}
 		}
 		evaluateBatchSpan.Finish()
 	}
@@ -436,8 +438,8 @@ func runPredictUrlsCmd(c *cobra.Command, args []string) error {
 	}
 
 	if publishToDatabase == false {
-		for range outputs {
-		}
+		//		for range outputs {
+		//		}
 
 		outputDir := filepath.Join(baseDir, framework.Name, framework.Version, model.Name, model.Version, strconv.Itoa(batchSize), device, hostName)
 		if !com.IsDir(outputDir) {
@@ -540,70 +542,74 @@ func runPredictUrlsCmd(c *cobra.Command, args []string) error {
 		}
 	}
 
-	for out0 := range outputs {
-		if cnt > urlCnt {
-			break
-		}
-		out, ok := out0.(steps.IDer)
-		if !ok {
-			return errors.Errorf("expecting steps.IDer, but got %v", out0)
-		}
-		id := out.GetID()
-		label := partlabels[id]
+	if saveInferenceResult {
+		for out0 := range outputs {
+			if cnt > urlCnt {
+				break
+			}
+			out, ok := out0.(steps.IDer)
+			if !ok {
+				return errors.Errorf("expecting steps.IDer, but got %v", out0)
+			}
+			id := out.GetID()
+			label := partlabels[id]
 
-		features := out.GetData().(dl.Features)
-		if !ok {
-			return errors.Errorf("expecting a dlframework.Features type, but got %v", out.GetData())
-		}
-
-		if publishPredictions == true {
-			log.WithField("model", modelName).Info("inserting predictions into inputPredictionsTable")
-
-			inputPrediction := evaluation.InputPrediction{
-				ID:            bson.NewObjectId(),
-				CreatedAt:     time.Now(),
-				InputID:       id,
-				ExpectedLabel: label,
-				Features:      features,
+			features := out.GetData().(dl.Features)
+			if !ok {
+				return errors.Errorf("expecting a dlframework.Features type, but got %v", out.GetData())
 			}
 
-			if err := inputPredictionsTable.Insert(inputPrediction); err != nil {
-				log.WithError(err).Errorf("failed to insert input prediction into database")
+			if publishPredictions == true {
+				log.WithField("model", modelName).Info("inserting predictions into inputPredictionsTable")
+
+				inputPrediction := evaluation.InputPrediction{
+					ID:            bson.NewObjectId(),
+					CreatedAt:     time.Now(),
+					InputID:       id,
+					ExpectedLabel: label,
+					Features:      features,
+				}
+
+				if err := inputPredictionsTable.Insert(inputPrediction); err != nil {
+					log.WithError(err).Errorf("failed to insert input prediction into database")
+				}
+				inputPredictionIds = append(inputPredictionIds, inputPrediction.ID)
 			}
-			inputPredictionIds = append(inputPredictionIds, inputPrediction.ID)
+
+			features.Sort()
+
+			// if features[0].Type == dl.FeatureType_CLASSIFICATION {
+			// 	label = strings.TrimSpace(strings.ToLower(label))
+			// 	if strings.TrimSpace(strings.ToLower(features[0].Feature.(*dl.Feature_Classification).Classification.GetLabel())) == label {
+			// 		cntTop1++
+			// 	}
+			// 	for _, f := range features[:5] {
+			// 		if strings.TrimSpace(strings.ToLower(f.Feature.(*dl.Feature_Classification).Classification.GetLabel())) == label {
+			// 			cntTop5++
+			// 		}
+			// 	}
+			// } else {
+			// 	log.WithField("model", modelName).Info("model is not of classification type, skip accuracy count")
+			// }
+			cnt++
 		}
 
-		features.Sort()
+		log.WithField("model", modelName).Info("finished inserting prediction")
 
-		// if features[0].Type == dl.FeatureType_CLASSIFICATION {
-		// 	label = strings.TrimSpace(strings.ToLower(label))
-		// 	if strings.TrimSpace(strings.ToLower(features[0].Feature.(*dl.Feature_Classification).Classification.GetLabel())) == label {
-		// 		cntTop1++
-		// 	}
-		// 	for _, f := range features[:5] {
-		// 		if strings.TrimSpace(strings.ToLower(f.Feature.(*dl.Feature_Classification).Classification.GetLabel())) == label {
-		// 			cntTop5++
-		// 		}
-		// 	}
-		// } else {
-		// 	log.WithField("model", modelName).Info("model is not of classification type, skip accuracy count")
-		// }
-		cnt++
+		modelAccuracy := evaluation.ModelAccuracy{
+			ID:        bson.NewObjectId(),
+			CreatedAt: time.Now(),
+			Top1:      float64(cntTop1) / float64(urlCnt),
+			Top5:      float64(cntTop5) / float64(urlCnt),
+		}
+		if err := modelAccuracyTable.Insert(modelAccuracy); err != nil {
+			log.WithError(err).Error("failed to publish model accuracy entry")
+		}
+
+		log.WithField("model", modelName).Info("downloading trace information")
+
+		evaluationEntry.ModelAccuracyID = modelAccuracy.ID
 	}
-
-	log.WithField("model", modelName).Info("finised inserting prediction")
-
-	modelAccuracy := evaluation.ModelAccuracy{
-		ID:        bson.NewObjectId(),
-		CreatedAt: time.Now(),
-		Top1:      float64(cntTop1) / float64(urlCnt),
-		Top5:      float64(cntTop5) / float64(urlCnt),
-	}
-	if err := modelAccuracyTable.Insert(modelAccuracy); err != nil {
-		log.WithError(err).Error("failed to publish model accuracy entry")
-	}
-
-	log.WithField("model", modelName).Info("downloading trace information")
 
 	// var trace evaluation.TraceInformation
 	// jsonDecoder := json.NewDecoder(resp)
@@ -636,7 +642,6 @@ func runPredictUrlsCmd(c *cobra.Command, args []string) error {
 	log.WithField("model", modelName).Info("inserted performance information")
 
 	evaluationEntry.PerformanceID = performance.ID
-	evaluationEntry.ModelAccuracyID = modelAccuracy.ID
 	evaluationEntry.InputPredictionIDs = inputPredictionIds
 
 	if err := evaluationTable.Insert(evaluationEntry); err != nil {

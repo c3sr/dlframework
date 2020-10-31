@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	log *logrus.Entry =  logger.New().WithField("pkg", "dlframework/framework/cmd/server")
+	log *logrus.Entry = logger.New().WithField("pkg", "dlframework/framework/cmd/server")
 )
 
 func init() {

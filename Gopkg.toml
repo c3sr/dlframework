@@ -180,11 +180,7 @@ ignored = ["github.com/rai-project/dllayer"]
 
 [[override]]
   branch = "master"
-  name = "github.com/rai-project/evaluation"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/rai-project/go-cupti"
+  name = "github.com/c3sr/evaluation"
 
 [[constraint]]
   branch = "master"
@@ -264,10 +260,6 @@ ignored = ["github.com/rai-project/dllayer"]
 
 [[constraint]]
   branch = "master"
-  name = "github.com/spf13/cobra"
-
-[[constraint]]
-  branch = "master"
   name = "github.com/spf13/viper"
 
 [[constraint]]
@@ -277,10 +269,6 @@ ignored = ["github.com/rai-project/dllayer"]
 [[constraint]]
   name = "github.com/uber/jaeger-client-go"
   version = "2.16.0"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/ulule/deepcopier"
 
 [[constraint]]
   branch = "master"
@@ -306,9 +294,13 @@ ignored = ["github.com/rai-project/dllayer"]
   name = "gopkg.in/yaml.v2"
   version = "2.2.1"
 
+[[constraint]]
+  name = "github.com/volatiletech/authboss-clientstate"
+  revision = "b5b6e0f4355ef65c1c3cdae96a4ee3f2cb5543d2"
+
 [[override]]
   name = "upper.io/db.v3"
-  version = "3.5.7"
+  version = "=3.5.7"
 
 [[override]]
   branch = "master"
@@ -321,6 +313,10 @@ ignored = ["github.com/rai-project/dllayer"]
 [[override]]
   version = "2.0.6"
   name = "gopkg.in/cheggaaa/pb.v2"
+
+[[override]]
+  name = "github.com/spf13/cobra"
+  version = "=0.0.5"
 
 [prune]
   go-tests = true

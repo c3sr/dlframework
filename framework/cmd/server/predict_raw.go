@@ -24,7 +24,7 @@ import (
 	dlcmd "github.com/c3sr/dlframework/framework/cmd"
 	"github.com/c3sr/dlframework/framework/options"
 	common "github.com/c3sr/dlframework/framework/predictor"
-	"github.com/rai-project/evaluation"
+	"github.com/c3sr/evaluation"
 	machine "github.com/rai-project/machine/info"
 	nvidiasmi "github.com/rai-project/nvidia-smi"
 	"github.com/rai-project/tracer"

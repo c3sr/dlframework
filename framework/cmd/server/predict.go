@@ -9,7 +9,7 @@ import (
 	"github.com/rai-project/config"
 	"github.com/rai-project/database"
 	"github.com/rai-project/database/mongodb"
-	"github.com/rai-project/evaluation"
+	"github.com/c3sr/evaluation"
 	nvidiasmi "github.com/rai-project/nvidia-smi"
 	"github.com/rai-project/tracer"
 	"github.com/rai-project/tracer/jaeger"

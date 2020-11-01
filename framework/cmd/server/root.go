@@ -13,7 +13,7 @@ import (
 	"github.com/rai-project/config"
 	"github.com/c3sr/dlframework"
 	"github.com/c3sr/dlframework/framework/cmd"
-	evalcmd "github.com/rai-project/evaluation/cmd"
+	evalcmd "github.com/c3sr/evaluation/cmd"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

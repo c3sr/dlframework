@@ -10,7 +10,7 @@ import (
 	raicmd "github.com/rai-project/cmd"
 	"github.com/rai-project/config"
 	"github.com/c3sr/dlframework/framework/cmd"
-	evaluations "github.com/rai-project/evaluation/cmd"
+	evaluations "github.com/c3sr/evaluation/cmd"
 	"github.com/rai-project/tracer"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"

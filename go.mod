@@ -148,7 +148,7 @@ require (
 	github.com/rai-project/dldataset v0.0.0-20181119123731-c28e4f89153b
 	github.com/rai-project/docker v0.0.0-20181119123731-86779e24c596
 	github.com/rai-project/downloadmanager v0.0.0-20181119123731-abede5faa82f
-	github.com/rai-project/evaluation v0.0.0-20181204141616-e0b15a6a3390
+	github.com/c3sr/evaluation v0.0.0-20181204141616-e0b15a6a3390
 	github.com/rai-project/go-cupti v0.0.0-20181121031418-ffa685874f19
 	github.com/rai-project/go-libjpeg v0.0.0-20181119123732-40fd7b1bcbeb
 	github.com/rai-project/godotenv v0.0.0-20180908223441-72ca456a35f4

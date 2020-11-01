@@ -6,7 +6,7 @@ import (
 	"os"
 
 	dllayer "github.com/rai-project/dllayer/cmd"
-	evalcmd "github.com/rai-project/evaluation/cmd"
+	evalcmd "github.com/c3sr/evaluation/cmd"
 	"github.com/spf13/cobra"
 )
 

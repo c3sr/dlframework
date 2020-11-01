@@ -82,7 +82,7 @@ import:
   - vision
 - package: github.com/rai-project/docker
   version: master
-- package: github.com/rai-project/evaluation
+- package: github.com/c3sr/evaluation
   subpackages:
   - cmd
 - package: github.com/rai-project/go-cupti

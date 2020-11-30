@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/k0kubun/pp"
-	"github.com/rai-project/dldataset"
+	"github.com/c3sr/dldataset"
 	"github.com/spf13/cobra"
 )
 

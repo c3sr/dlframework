@@ -10,7 +10,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/c3sr/dlframework"
 	"github.com/c3sr/dlframework/registryquery"
-	rgrpc "github.com/rai-project/grpc"
+	rgrpc "github.com/c3sr/grpc"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 )

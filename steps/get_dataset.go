@@ -5,10 +5,10 @@ import (
 
 	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
-	"github.com/rai-project/dldataset"
-	_ "github.com/rai-project/dldataset/vision"
-	"github.com/rai-project/pipeline"
-	"github.com/rai-project/tracer"
+	"github.com/c3sr/dldataset"
+	_ "github.com/c3sr/dldataset/vision"
+	"github.com/c3sr/pipeline"
+	"github.com/c3sr/tracer"
 )
 
 type getDataset struct {

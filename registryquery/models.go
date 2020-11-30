@@ -9,13 +9,13 @@ import (
 	"github.com/Masterminds/semver"
 	"github.com/jinzhu/copier"
 	"github.com/pkg/errors"
-	"github.com/rai-project/config"
+	"github.com/c3sr/config"
 	"github.com/c3sr/dlframework"
 	dl "github.com/c3sr/dlframework"
 	webmodels "github.com/c3sr/dlframework/httpapi/models"
-	"github.com/rai-project/parallel/tunny"
-	kv "github.com/rai-project/registry"
-	"github.com/rai-project/serializer"
+	"github.com/c3sr/parallel/tunny"
+	kv "github.com/c3sr/registry"
+	"github.com/c3sr/serializer"
 )
 
 type modelsTy struct {

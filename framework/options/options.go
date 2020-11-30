@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	dl "github.com/c3sr/dlframework"
-	nvidiasmi "github.com/rai-project/nvidia-smi"
-	"github.com/rai-project/tracer"
+	nvidiasmi "github.com/c3sr/nvidia-smi"
+	"github.com/c3sr/tracer"
 )
 
 type Options struct {

@@ -1,6 +1,6 @@
 # MLModelScope Agent Sever Commands
 
-**Note** that evaluations currently only run on datasets known by [DLDataset](https://github.com/rai-project/dldataset)
+**Note** that evaluations currently only run on datasets known by [DLDataset](https://github.com/c3sr/dldataset)
 
 ## Running Evaluations
 

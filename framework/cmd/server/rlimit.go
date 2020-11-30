@@ -3,8 +3,8 @@
 package server
 
 import (
-	"github.com/rai-project/config"
-	"github.com/rai-project/sys"
+	"github.com/c3sr/config"
+	"github.com/c3sr/sys"
 )
 
 var (

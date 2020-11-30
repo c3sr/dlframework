@@ -15,9 +15,9 @@ import (
 	"github.com/pkg/errors"
 	"github.com/c3sr/dlframework"
 	"github.com/c3sr/dlframework/framework/agent"
-	monitors "github.com/rai-project/monitoring/monitors"
-	"github.com/rai-project/utils"
-	echologger "github.com/rai-project/web/logger"
+	monitors "github.com/c3sr/monitoring/monitors"
+	"github.com/c3sr/utils"
+	echologger "github.com/c3sr/web/logger"
 	"github.com/spf13/cobra"
 )
 

@@ -15,8 +15,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/c3sr/dlframework"
 	"github.com/c3sr/dlframework/registryquery"
-	rgrpc "github.com/rai-project/grpc"
-	"github.com/rai-project/tracer"
+	rgrpc "github.com/c3sr/grpc"
+	"github.com/c3sr/tracer"
 	"github.com/spf13/cobra"
 	jaeger "github.com/uber/jaeger-client-go"
 

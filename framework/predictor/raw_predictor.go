@@ -10,7 +10,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/c3sr/dlframework"
-	"github.com/rai-project/downloadmanager"
+	"github.com/c3sr/downloadmanager"
 )
 
 const rawFileDelimiter = ","

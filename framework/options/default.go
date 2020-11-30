@@ -1,7 +1,7 @@
 package options
 
-import "github.com/rai-project/config"
-import nvidiasmi "github.com/rai-project/nvidia-smi"
+import "github.com/c3sr/config"
+import nvidiasmi "github.com/c3sr/nvidia-smi"
 
 var (
 	DefaultBatchSize    int = 1

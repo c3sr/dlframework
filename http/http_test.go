@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/rai-project/config"
+	"github.com/c3sr/config"
 )
 
 func TestMain(m *testing.M) {

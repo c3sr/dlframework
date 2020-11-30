@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/k0kubun/pp"
-	"github.com/rai-project/tracer/convert/chrome"
+	"github.com/c3sr/tracer/convert/chrome"
 	"github.com/spf13/cobra"
 )
 

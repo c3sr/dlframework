@@ -8,22 +8,22 @@ import (
 
 	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
-	"github.com/rai-project/dldataset"
+	"github.com/c3sr/dldataset"
 	dl "github.com/c3sr/dlframework"
 	"github.com/c3sr/dlframework/framework/options"
 	"github.com/c3sr/dlframework/framework/predictor"
 	"github.com/c3sr/dlframework/steps"
-	rgrpc "github.com/rai-project/grpc"
-	"github.com/rai-project/pipeline"
-	"github.com/rai-project/registry"
-	"github.com/rai-project/tracer"
-	"github.com/rai-project/utils"
-	"github.com/rai-project/uuid"
+	rgrpc "github.com/c3sr/grpc"
+	"github.com/c3sr/pipeline"
+	"github.com/c3sr/registry"
+	"github.com/c3sr/tracer"
+	"github.com/c3sr/utils"
+	"github.com/c3sr/uuid"
 	jaeger "github.com/uber/jaeger-client-go"
 	"golang.org/x/sync/syncmap"
 	"google.golang.org/grpc"
 
-	_ "github.com/rai-project/dldataset/vision"
+	_ "github.com/c3sr/dldataset/vision"
 )
 
 type Agent struct {

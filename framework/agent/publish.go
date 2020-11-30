@@ -8,14 +8,14 @@ import (
 	"strings"
 	"sync"
 
-	cpuinfo "github.com/rai-project/machine/info"
-	nvidiasmi "github.com/rai-project/nvidia-smi"
+	cpuinfo "github.com/c3sr/machine/info"
+	nvidiasmi "github.com/c3sr/nvidia-smi"
 
-	"github.com/rai-project/config"
+	"github.com/c3sr/config"
 	dl "github.com/c3sr/dlframework"
-	store "github.com/rai-project/libkv/store"
-	lock "github.com/rai-project/lock/registry"
-	"github.com/rai-project/registry"
+	store "github.com/c3sr/libkv/store"
+	lock "github.com/c3sr/lock/registry"
+	"github.com/c3sr/registry"
 )
 
 type base struct {

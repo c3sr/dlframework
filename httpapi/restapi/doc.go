@@ -12,7 +12,7 @@ MLModelScope is a hardware/software agnostic platform to facilitate the evaluati
     BasePath: /api
     Version: 0.2.18
     License: NCSA/UIUC https://raw.githubusercontent.com/c3sr/dlframework/master/LICENSE.TXT
-    Contact: Abdul Dakkak, Cheng Li https://github.com/rai-project/carml
+    Contact: Abdul Dakkak, Cheng Li https://github.com/c3sr/carml
 
     Consumes:
     - application/json

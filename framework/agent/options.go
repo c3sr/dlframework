@@ -6,7 +6,7 @@ import (
 
 	"github.com/facebookgo/freeport"
 	"github.com/pkg/errors"
-	"github.com/rai-project/utils"
+	"github.com/c3sr/utils"
 )
 
 type Options struct {

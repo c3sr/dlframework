@@ -1,7 +1,7 @@
 package server
 
 import (
-	dllayer "github.com/rai-project/dllayer/cmd"
+	dllayer "github.com/c3sr/dllayer/cmd"
 	"github.com/spf13/cobra"
 )
 

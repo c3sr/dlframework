@@ -7,9 +7,9 @@ import (
 	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
 	"github.com/c3sr/dlframework/framework/predictor"
-	"github.com/rai-project/image/types"
-	"github.com/rai-project/pipeline"
-	"github.com/rai-project/tracer"
+	"github.com/c3sr/image/types"
+	"github.com/c3sr/pipeline"
+	"github.com/c3sr/tracer"
 )
 
 type cropImage struct {

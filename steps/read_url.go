@@ -9,8 +9,8 @@ import (
 	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
 	dl "github.com/c3sr/dlframework"
-	"github.com/rai-project/pipeline"
-	"github.com/rai-project/tracer"
+	"github.com/c3sr/pipeline"
+	"github.com/c3sr/tracer"
 )
 
 type readURL struct {

@@ -15,13 +15,13 @@ import (
 	sourcepath "github.com/GeertJohan/go-sourcepath"
 	"github.com/fatih/color"
 	shellwords "github.com/junegunn/go-shellwords"
-	"github.com/rai-project/config"
-	"github.com/rai-project/cpu/cpuid"
+	"github.com/c3sr/config"
+	"github.com/c3sr/cpu/cpuid"
 	dl "github.com/c3sr/dlframework"
 	dlcmd "github.com/c3sr/dlframework/framework/cmd"
 	"github.com/sirupsen/logrus"
 
-	_ "github.com/rai-project/logger/hooks"
+	_ "github.com/c3sr/logger/hooks"
 )
 
 var (
@@ -114,7 +114,7 @@ func main() {
 					compileArgs = append(compileArgs, "-tags=debug")
 				}
 				cmd := exec.Command("go", compileArgs...)
-				agentPath := filepath.Join(os.Getenv("GOPATH"), "/src/github.com/rai-project/", framework, framework+"-agent")
+				agentPath := filepath.Join(os.Getenv("GOPATH"), "/src/github.com/c3sr/", framework, framework+"-agent")
 				cmd.Dir = agentPath
 				fmt.Printf("Compiling using :: go %#v in %v\n", compileArgs, cmd.Dir)
 				err := cmd.Run()

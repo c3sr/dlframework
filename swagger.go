@@ -9,7 +9,7 @@ const (
     "description": "MLModelScope is a hardware/software agnostic platform to facilitate the evaluation, measurement, and introspection of ML models within AI pipelines. MLModelScope aids application developers in discovering and experimenting with models, data scientists developers in replicating and evaluating for publishing models, and system architects in understanding the performance of AI workloads.",
     "contact": {
       "name": "Abdul Dakkak, Cheng Li",
-      "url": "https://github.com/rai-project/carml"
+      "url": "https://github.com/c3sr/carml"
     },
     "license": {
       "name": "NCSA/UIUC",
@@ -1401,7 +1401,7 @@ const (
     "version": "0.2.18",
     "contact": {
       "name": "Abdul Dakkak, Cheng Li",
-      "url": "https://github.com/rai-project/carml"
+      "url": "https://github.com/c3sr/carml"
     },
     "license": {
       "name": "NCSA/UIUC",

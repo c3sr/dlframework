@@ -16,7 +16,7 @@ import (
 	"github.com/k0kubun/pp"
 	"github.com/mattn/go-shellwords"
 	"github.com/pkg/errors"
-	"github.com/rai-project/docker"
+	"github.com/c3sr/docker"
 	"github.com/spf13/cobra"
 )
 

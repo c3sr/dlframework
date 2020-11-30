@@ -34,7 +34,7 @@ func init() {
     "title": "MLModelScope",
     "contact": {
       "name": "Abdul Dakkak, Cheng Li",
-      "url": "https://github.com/rai-project/carml"
+      "url": "https://github.com/c3sr/carml"
     },
     "license": {
       "name": "NCSA/UIUC",
@@ -1405,7 +1405,7 @@ func init() {
     "title": "MLModelScope",
     "contact": {
       "name": "Abdul Dakkak, Cheng Li",
-      "url": "https://github.com/rai-project/carml"
+      "url": "https://github.com/c3sr/carml"
     },
     "license": {
       "name": "NCSA/UIUC",

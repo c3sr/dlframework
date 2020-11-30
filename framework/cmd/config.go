@@ -8,8 +8,8 @@ import (
 	"github.com/Unknwon/com"
 	"github.com/fatih/color"
 	homedir "github.com/mitchellh/go-homedir"
-	"github.com/rai-project/config"
-	"github.com/rai-project/logger"
+	"github.com/c3sr/config"
+	"github.com/c3sr/logger"
 	"github.com/sirupsen/logrus"
 )
 

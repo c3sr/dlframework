@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/pkg/errors"
-	"github.com/rai-project/nvidia-smi"
+	"github.com/c3sr/nvidia-smi"
 )
 
 func NVIDIASmi() (*nvidiasmi.NvidiaSmi, error) {

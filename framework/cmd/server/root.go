@@ -9,8 +9,8 @@ import (
 	"time"
 
 	shutdown "github.com/klauspost/shutdown2"
-	raicmd "github.com/rai-project/cmd"
-	"github.com/rai-project/config"
+	raicmd "github.com/c3sr/cmd"
+	"github.com/c3sr/config"
 	"github.com/c3sr/dlframework"
 	"github.com/c3sr/dlframework/framework/cmd"
 	evalcmd "github.com/c3sr/evaluation/cmd"
@@ -18,9 +18,9 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	//dllayer "github.com/rai-project/dllayer/cmd"
+	//dllayer "github.com/c3sr/dllayer/cmd"
 
-	_ "github.com/rai-project/logger/hooks"
+	_ "github.com/c3sr/logger/hooks"
 )
 
 var (

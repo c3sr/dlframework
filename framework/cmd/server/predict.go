@@ -6,14 +6,14 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
-	"github.com/rai-project/config"
-	"github.com/rai-project/database"
-	"github.com/rai-project/database/mongodb"
+	"github.com/c3sr/config"
+	"github.com/c3sr/database"
+	"github.com/c3sr/database/mongodb"
 	"github.com/c3sr/evaluation"
-	nvidiasmi "github.com/rai-project/nvidia-smi"
-	"github.com/rai-project/tracer"
-	"github.com/rai-project/tracer/jaeger"
-	tracerutils "github.com/rai-project/tracer/utils"
+	nvidiasmi "github.com/c3sr/nvidia-smi"
+	"github.com/c3sr/tracer"
+	"github.com/c3sr/tracer/jaeger"
+	tracerutils "github.com/c3sr/tracer/utils"
 )
 
 var (

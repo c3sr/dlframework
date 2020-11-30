@@ -11,7 +11,7 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/sync/syncmap"
 
-	"github.com/rai-project/config"
+	"github.com/c3sr/config"
 	yaml "gopkg.in/yaml.v2"
 )
 

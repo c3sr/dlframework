@@ -10,12 +10,12 @@ import (
 	"github.com/Masterminds/semver"
 
 	"github.com/pkg/errors"
-	"github.com/rai-project/config"
+	"github.com/c3sr/config"
 	dl "github.com/c3sr/dlframework"
 	webmodels "github.com/c3sr/dlframework/httpapi/models"
-	store "github.com/rai-project/libkv/store"
-	"github.com/rai-project/parallel/tunny"
-	kv "github.com/rai-project/registry"
+	store "github.com/c3sr/libkv/store"
+	"github.com/c3sr/parallel/tunny"
+	kv "github.com/c3sr/registry"
 )
 
 func (m modelsTy) Agents(frameworkName, frameworkVersion, modelName, modelVersion string) ([]*webmodels.DlframeworkAgent, error) {

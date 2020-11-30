@@ -7,7 +7,7 @@ import (
 
 	"github.com/Unknwon/com"
 	"github.com/pkg/errors"
-	"github.com/rai-project/config"
+	"github.com/c3sr/config"
 )
 
 func UploadDir() (string, error) {

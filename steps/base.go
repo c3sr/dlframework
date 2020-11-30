@@ -3,8 +3,8 @@ package steps
 import (
 	"context"
 
-	"github.com/rai-project/pipeline"
-	"github.com/rai-project/uuid"
+	"github.com/c3sr/pipeline"
+	"github.com/c3sr/uuid"
 )
 
 type base struct {

@@ -7,7 +7,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/c3sr/dlframework"
 	"github.com/c3sr/dlframework/framework/options"
-	"github.com/rai-project/tracer"
+	"github.com/c3sr/tracer"
 	yaml "gopkg.in/yaml.v2"
 )
 

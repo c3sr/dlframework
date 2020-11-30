@@ -7,17 +7,17 @@ import (
 
 	"github.com/k0kubun/pp"
 
-	"github.com/rai-project/config"
+	"github.com/c3sr/config"
 	dl "github.com/c3sr/dlframework"
 	"github.com/c3sr/dlframework/framework/predictor"
-	"github.com/rai-project/image"
-	"github.com/rai-project/image/types"
-	"github.com/rai-project/pipeline"
-	"github.com/rai-project/uuid"
+	"github.com/c3sr/image"
+	"github.com/c3sr/image/types"
+	"github.com/c3sr/pipeline"
+	"github.com/c3sr/uuid"
 	"github.com/stretchr/testify/assert"
 	"gorgonia.org/tensor"
 
-	_ "github.com/rai-project/tracer/jaeger"
+	_ "github.com/c3sr/tracer/jaeger"
 )
 
 func TestURLRead(t *testing.T) {

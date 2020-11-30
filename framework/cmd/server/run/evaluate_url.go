@@ -17,12 +17,12 @@ import (
 	shellwords "github.com/junegunn/go-shellwords"
 	"github.com/sirupsen/logrus"
 
-	"github.com/rai-project/config"
-	"github.com/rai-project/cpu/cpuid"
+	"github.com/c3sr/config"
+	"github.com/c3sr/cpu/cpuid"
 	dl "github.com/c3sr/dlframework"
 	dlcmd "github.com/c3sr/dlframework/framework/cmd"
 
-	_ "github.com/rai-project/logger/hooks"
+	_ "github.com/c3sr/logger/hooks"
 )
 
 var (
@@ -130,7 +130,7 @@ func main() {
 					compileArgs = append(compileArgs, "-tags=debug")
 				}
 				cmd := exec.Command("go", compileArgs...)
-				agentPath := filepath.Join(os.Getenv("GOPATH"), "/src/github.com/rai-project/", framework, framework+"-agent")
+				agentPath := filepath.Join(os.Getenv("GOPATH"), "/src/github.com/c3sr/", framework, framework+"-agent")
 				cmd.Dir = agentPath
 				cmd.Stderr = os.Stdout
 				cmd.Stdout = os.Stdout

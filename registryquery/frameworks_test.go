@@ -7,13 +7,13 @@ import (
 )
 
 func TestGetFrameworkManifests(t *testing.T) {
-	manifests, err := Frameworks.manifests()
+	manifests, err := Frameworks.Manifests()
 	assert.NoError(t, err)
 	assert.NotEmpty(t, manifests)
 }
 
 func TestGetFrameworkManifestsFilterManifests(t *testing.T) {
-	manifests, err := Frameworks.manifests()
+	manifests, err := Frameworks.Manifests()
 	assert.NoError(t, err)
 	assert.NotEmpty(t, manifests)
 	fs, err := Frameworks.FilterManifests(manifests, "tensorflow", "latest")

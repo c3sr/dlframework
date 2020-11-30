@@ -17,8 +17,9 @@ import (
 	"github.com/c3sr/dlframework/registryquery"
 	rgrpc "github.com/c3sr/grpc"
 	"github.com/c3sr/tracer"
+	jaeger "github.com/c3sr/tracer/jaeger"
 	"github.com/spf13/cobra"
-	jaeger "github.com/uber/jaeger-client-go"
+	jaegerclient "github.com/uber/jaeger-client-go"
 
 	"google.golang.org/grpc"
 )
@@ -168,8 +169,10 @@ var urlsCmd = &cobra.Command{
 
 		time.Sleep(10 * time.Second)
 
-		traceID := span.Context().(jaeger.SpanContext).TraceID()
+		traceID := span.Context().(jaegerclient.SpanContext).TraceID()
 		traceIDVal := strconv.FormatUint(traceID.Low, 16)
+		tracerServerAddr:= getTracerServerAddress(jaeger.Config.Endpoints[0])
+
 		tracer.Close()
 		query := fmt.Sprintf("http://%s:16686/api/traces/%v", tracerServerAddr, traceIDVal)
 		resp, err := grequests.Get(query, nil)

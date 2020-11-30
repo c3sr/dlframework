@@ -53,7 +53,7 @@ func (o *URLsParams) BindRequest(r *http.Request, route *middleware.MatchedRoute
 		var body models.DlframeworkURLsRequest
 		if err := route.Consumer.Consume(r.Body, &body); err != nil {
 			if err == io.EOF {
-				res = append(res, errors.Required("body", "body"))
+				res = append(res, errors.Required("body", "body", nil))
 			} else {
 				res = append(res, errors.NewParseError("body", "body", "", err))
 			}
@@ -68,7 +68,7 @@ func (o *URLsParams) BindRequest(r *http.Request, route *middleware.MatchedRoute
 			}
 		}
 	} else {
-		res = append(res, errors.Required("body", "body"))
+		res = append(res, errors.Required("body", "body", nil))
 	}
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)

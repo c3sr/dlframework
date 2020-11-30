@@ -98,8 +98,8 @@ func TestURLReadPreprocessImage(t *testing.T) {
 
 	opts := predictor.PreprocessOptions{
 		MeanImage: []float32{128, 100, 104},
-		Size:      []int{224, 224},
-		Scale:     1.0,
+		Dims:      []int{224, 224},
+		Scale:     []float32{1},
 		ColorMode: types.RGBMode,
 		Layout:    image.HWCLayout,
 	}
@@ -139,8 +139,8 @@ func TestURLReadPreprocessImageTensor(t *testing.T) {
 
 	opts := predictor.PreprocessOptions{
 		MeanImage: []float32{128, 100, 104},
-		Size:      []int{224, 224},
-		Scale:     1.0,
+		Dims:      []int{224, 224},
+		Scale:     []float32{1},
 		ColorMode: types.RGBMode,
 		Layout:    image.HWCLayout,
 	}

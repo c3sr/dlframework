@@ -286,6 +286,8 @@ func runPredictDatasetCmd(c *cobra.Command, args []string) error {
 	// inferenceProgress.FinishPrint("inference complete")
 	inferenceProgress.Finish()
 
+	predictor.Close()
+
 	close(outputs)
 
 	cnt := 0

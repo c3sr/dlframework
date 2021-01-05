@@ -415,6 +415,8 @@ func runPredictUrlsCmd(c *cobra.Command, args []string) error {
 	//inferenceProgress.FinishPrint("inference complete")
 	inferenceProgress.Finish()
 
+	predictor.Close()
+
 	rootSpan.Finish()
 	tracer.ResetStd()
 

@@ -269,6 +269,8 @@ func (p *Agent) urls(ctx context.Context, req *dl.URLsRequest) (<-chan interface
 		Then(steps.NewPredict(predictor)).
 		Run(input)
 
+	predictor.Close()
+
 	return output, nil
 }
 
@@ -358,6 +360,8 @@ func (p *Agent) images(ctx context.Context, req *dl.ImagesRequest) (<-chan inter
 	output = pipeline.New(pipeline.Context(ctx), pipeline.ChannelBuffer(p.channelBuffer)).
 		Then(steps.NewPredict(predictor)).
 		Run(input)
+
+	predictor.Close()
 
 	return output, nil
 }
@@ -452,6 +456,8 @@ func (p *Agent) dataset(ctx context.Context, req *dl.DatasetRequest) (<-chan int
 		Then(steps.NewPreprocessImage(preprocessOptions)).
 		Then(steps.NewPredict(predictor)).
 		Run(input)
+
+	predictor.Close()
 
 	return output, nil
 }

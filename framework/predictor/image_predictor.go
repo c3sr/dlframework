@@ -448,6 +448,31 @@ func (p ImagePredictor) GetBackgroundIndex() (bool, int) {
 	return true, index
 }
 
+func (p ImagePredictor) GetBoxScaling() (float32, float32) {
+  scaleWidth, scaleHeight := float32(1.0), float32(1.0)
+  model := p.Model
+	modelOutput := model.GetOutput()
+  typeParameters := modelOutput.GetParameters()
+
+	str, err := p.GetTypeParameter(typeParameters, "scale_width")
+	if err == nil {
+    val, err := strconv.Atoi(str)
+    if err == nil {
+      scaleWidth = float32(val)
+    }
+	}
+
+	str, err = p.GetTypeParameter(typeParameters, "scale_height")
+	if err == nil {
+    val, err := strconv.Atoi(str)
+    if err == nil {
+      scaleHeight = float32(val)
+    }
+  }
+
+  return scaleWidth, scaleHeight
+}
+
 func (p ImagePredictor) GetBoxIndex() ([]int) {
   res := []int{0, 1, 2, 3}
 	model := p.Model
@@ -569,6 +594,7 @@ func (p ImagePredictor) createBoundingBoxFeaturesBatchFlattened(ctx context.Cont
 	rprobs := make([]*dlframework.Feature, featureLen)
   filterBackground, backgroundIndex := p.GetBackgroundIndex()
   boxIndex := p.GetBoxIndex()
+  boxScaleWidth, boxScaleHeight := p.GetBoxScaling()
 
   cnt := 0
 	for jj := 0; jj < featureLen; jj++ {
@@ -581,10 +607,10 @@ func (p ImagePredictor) createBoundingBoxFeaturesBatchFlattened(ctx context.Cont
     if(!filterBackground || backgroundIndex != int(classes[jj])) {
       rprobs[cnt] = feature.New(
         feature.BoundingBoxType(),
-        feature.BoundingBoxXmin(boxes[jj*4+boxIndex[1]]),
-        feature.BoundingBoxXmax(boxes[jj*4+boxIndex[3]]),
-        feature.BoundingBoxYmin(boxes[jj*4+boxIndex[0]]),
-        feature.BoundingBoxYmax(boxes[jj*4+boxIndex[2]]),
+        feature.BoundingBoxXmin(boxes[jj*4+boxIndex[1]] / boxScaleWidth),
+        feature.BoundingBoxXmax(boxes[jj*4+boxIndex[3]] / boxScaleWidth),
+        feature.BoundingBoxYmin(boxes[jj*4+boxIndex[0]] / boxScaleHeight),
+        feature.BoundingBoxYmax(boxes[jj*4+boxIndex[2]] / boxScaleHeight),
         feature.BoundingBoxIndex(int32(classes[jj])),
         feature.BoundingBoxLabel(label),
         feature.Probability(probabilities[jj]),
@@ -955,4 +981,5 @@ func (p ImagePredictor) GetFeaturesChecksum() string {
 	}
 	return pfeats.Value
 }
+
 

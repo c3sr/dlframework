@@ -433,6 +433,47 @@ func (p ImagePredictor) GetProbabilitiesTransform() string {
 	return val
 }
 
+func (p ImagePredictor) GetBackgroundIndex() (bool, int) {
+	model := p.Model
+	modelOutput := model.GetOutput()
+	typeParameters := modelOutput.GetParameters()
+	str, err := p.GetTypeParameter(typeParameters, "background_index")
+	if err != nil {
+		return false, 0
+	}
+	index, err := strconv.Atoi(str)
+	if err != nil {
+		return false, 0
+	}
+	return true, index
+}
+
+func (p ImagePredictor) GetBoxIndex() ([]int) {
+  res := []int{0, 1, 2, 3}
+	model := p.Model
+	modelOutput := model.GetOutput()
+	typeParameters := modelOutput.GetParameters()
+
+  indices := []string{"ymin_index", "xmin_index", "ymax_index", "xmax_index"}
+
+  for ii, cur := range(indices) {
+    str, err := p.GetTypeParameter(typeParameters, cur)
+    if err != nil {
+      continue
+    }
+
+    index, err := strconv.Atoi(str)
+	  if err != nil {
+		  continue
+	  }
+
+    res[ii] = index
+  }
+
+	return res
+}
+
+
 func (p ImagePredictor) createClassificationFeaturesBatch(ctx context.Context, probabilities []float32, labels []string) dlframework.Features {
 	featureLen := len(probabilities)
 
@@ -512,35 +553,24 @@ func (p ImagePredictor) CreateClassificationFeatures(ctx context.Context, probab
 	return p.CreateClassificationFeaturesFrom1D(ctx, probabilities.Data().([]float32), labels)
 }
 
-func createBoundingBoxFeaturesBatchUnflattened(ctx context.Context, probabilities []float32, classes []float32, boxes [][]float32, labels []string) dlframework.Features {
-	featureLen := len(probabilities)
-	rprobs := make([]*dlframework.Feature, featureLen)
-	for jj := 0; jj < featureLen; jj++ {
-		var label string
-		if probabilities[jj] < 0 {
-			label = "none"
-		} else {
-			label = labels[int32(classes[jj])]
-		}
-		rprobs[jj] = feature.New(
-			feature.BoundingBoxType(),
-			feature.BoundingBoxXmin(boxes[jj][1]),
-			feature.BoundingBoxXmax(boxes[jj][3]),
-			feature.BoundingBoxYmin(boxes[jj][0]),
-			feature.BoundingBoxYmax(boxes[jj][2]),
-			feature.BoundingBoxIndex(int32(classes[jj])),
-			feature.BoundingBoxLabel(label),
-			feature.Probability(probabilities[jj]),
-		)
-	}
-	res := dlframework.Features(rprobs)
-	sort.Sort(res)
-	return res
+func (p ImagePredictor) createBoundingBoxFeaturesBatchUnflattened(ctx context.Context, probabilities []float32, classes []float32, boxes [][]float32, labels []string) dlframework.Features {
+  featureLen := len(probabilities)
+  flattenedBoxes := make([]float32, featureLen * 4)
+  for jj := 0; jj < featureLen; jj++ {
+    for kk := 0; kk < 4; kk++ {
+      flattenedBoxes[jj * 4 + kk] = boxes[jj][kk]
+    }
+  }
+  return p.createBoundingBoxFeaturesBatchFlattened(ctx, probabilities, classes, flattenedBoxes, labels)
 }
 
-func createBoundingBoxFeaturesBatchFlattened(ctx context.Context, probabilities []float32, classes []float32, boxes []float32, labels []string) dlframework.Features {
+func (p ImagePredictor) createBoundingBoxFeaturesBatchFlattened(ctx context.Context, probabilities []float32, classes []float32, boxes []float32, labels []string) dlframework.Features {
 	featureLen := len(probabilities)
 	rprobs := make([]*dlframework.Feature, featureLen)
+  filterBackground, backgroundIndex := p.GetBackgroundIndex()
+  boxIndex := p.GetBoxIndex()
+
+  cnt := 0
 	for jj := 0; jj < featureLen; jj++ {
 		var label string
 		if probabilities[jj] < 0 {
@@ -548,18 +578,21 @@ func createBoundingBoxFeaturesBatchFlattened(ctx context.Context, probabilities 
 		} else {
 			label = labels[int32(classes[jj])]
 		}
-		rprobs[jj] = feature.New(
-			feature.BoundingBoxType(),
-			feature.BoundingBoxXmin(boxes[jj*4+1]),
-			feature.BoundingBoxXmax(boxes[jj*4+3]),
-			feature.BoundingBoxYmin(boxes[jj*4+0]),
-			feature.BoundingBoxYmax(boxes[jj*4+2]),
-			feature.BoundingBoxIndex(int32(classes[jj])),
-			feature.BoundingBoxLabel(label),
-			feature.Probability(probabilities[jj]),
-		)
+    if(!filterBackground || backgroundIndex != int(classes[jj])) {
+      rprobs[cnt] = feature.New(
+        feature.BoundingBoxType(),
+        feature.BoundingBoxXmin(boxes[jj*4+boxIndex[1]]),
+        feature.BoundingBoxXmax(boxes[jj*4+boxIndex[3]]),
+        feature.BoundingBoxYmin(boxes[jj*4+boxIndex[0]]),
+        feature.BoundingBoxYmax(boxes[jj*4+boxIndex[2]]),
+        feature.BoundingBoxIndex(int32(classes[jj])),
+        feature.BoundingBoxLabel(label),
+        feature.Probability(probabilities[jj]),
+      )
+      cnt++
+    }
 	}
-	res := dlframework.Features(rprobs)
+	res := dlframework.Features(rprobs[0:cnt])
 	sort.Sort(res)
 	return res
 }
@@ -572,7 +605,7 @@ func (p ImagePredictor) CreateBoundingBoxFeaturesFlattened(ctx context.Context, 
 	featureLen := len(probabilities) / batchSize
 	features := make([]dlframework.Features, batchSize)
 	for ii := 0; ii < batchSize; ii++ {
-		features[ii] = createBoundingBoxFeaturesBatchFlattened(ctx, probabilities[ii*featureLen:(ii+1)*featureLen], classes[ii*featureLen:(ii+1)*featureLen], boxes[ii*featureLen*4:(ii+1)*featureLen*4], labels)
+		features[ii] = p.createBoundingBoxFeaturesBatchFlattened(ctx, probabilities[ii*featureLen:(ii+1)*featureLen], classes[ii*featureLen:(ii+1)*featureLen], boxes[ii*featureLen*4:(ii+1)*featureLen*4], labels)
 	}
 	return features, nil
 }
@@ -586,7 +619,7 @@ func (p ImagePredictor) CreateBoundingBoxFeaturesUnflattened(ctx context.Context
 	features := make([]dlframework.Features, batchSize)
 
 	for ii := 0; ii < batchSize; ii++ {
-		features[ii] = createBoundingBoxFeaturesBatchUnflattened(ctx, probabilities[ii], classes[ii], boxes[ii], labels)
+		features[ii] = p.createBoundingBoxFeaturesBatchUnflattened(ctx, probabilities[ii], classes[ii], boxes[ii], labels)
 	}
 
 	return features, nil
@@ -922,3 +955,4 @@ func (p ImagePredictor) GetFeaturesChecksum() string {
 	}
 	return pfeats.Value
 }
+

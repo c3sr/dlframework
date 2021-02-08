@@ -15,9 +15,9 @@ import (
 	"github.com/c3sr/dlframework/steps"
 	rgrpc "github.com/c3sr/grpc"
 	"github.com/c3sr/pipeline"
-//	"github.com/c3sr/registry"
+	"github.com/c3sr/registry"
 	"github.com/c3sr/tracer"
-//	"github.com/c3sr/utils"
+	"github.com/c3sr/utils"
 	"github.com/c3sr/uuid"
 	jaeger "github.com/uber/jaeger-client-go"
 	"golang.org/x/sync/syncmap"
@@ -511,7 +511,7 @@ func (p *Agent) RegisterManifests() (*grpc.Server, error) {
 			Framework: p.base.Framework,
 		},
 	}
-/*
+
 	go func() {
 		utils.Every(
 			registry.Config.Timeout/2,
@@ -520,9 +520,6 @@ func (p *Agent) RegisterManifests() (*grpc.Server, error) {
 			},
 		)
 	}()
-*/
-
-	svr.PublishInRegistery()
 
 	dl.RegisterRegistryServer(grpcServer, svr)
 
@@ -535,7 +532,6 @@ func (p *Agent) RegisterPredictor() (*grpc.Server, error) {
 	host := fmt.Sprintf("%s:%d", p.options.host, p.options.port)
 	log.Info("registering predictor service at ", host)
 
-/*
 	go func() {
 		utils.Every(
 			registry.Config.Timeout/2,
@@ -544,9 +540,6 @@ func (p *Agent) RegisterPredictor() (*grpc.Server, error) {
 			},
 		)
 	}()
-*/
-
-	p.base.PublishInPredictor(host, "predictor")
 
 	dl.RegisterPredictServer(grpcServer, p)
 

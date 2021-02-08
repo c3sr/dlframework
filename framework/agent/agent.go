@@ -511,6 +511,7 @@ func (p *Agent) RegisterManifests() (*grpc.Server, error) {
 			Framework: p.base.Framework,
 		},
 	}
+/*
 	go func() {
 		utils.Every(
 			registry.Config.Timeout/2,
@@ -519,6 +520,10 @@ func (p *Agent) RegisterManifests() (*grpc.Server, error) {
 			},
 		)
 	}()
+*/
+
+	svr.PublishInRegistery()
+
 	dl.RegisterRegistryServer(grpcServer, svr)
 
 	return grpcServer, nil
@@ -530,6 +535,7 @@ func (p *Agent) RegisterPredictor() (*grpc.Server, error) {
 	host := fmt.Sprintf("%s:%d", p.options.host, p.options.port)
 	log.Info("registering predictor service at ", host)
 
+/*
 	go func() {
 		utils.Every(
 			registry.Config.Timeout/2,
@@ -538,6 +544,10 @@ func (p *Agent) RegisterPredictor() (*grpc.Server, error) {
 			},
 		)
 	}()
+*/
+
+	p.base.PublishInPredictor(host, "predictor")
+
 	dl.RegisterPredictServer(grpcServer, p)
 
 	return grpcServer, nil

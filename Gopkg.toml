@@ -28,9 +28,9 @@
   branch = "master"
   name = "github.com/c3sr/cmd"
 
-[[constraint]]
-  branch = "master"
+[[override]]
   name = "github.com/c3sr/config"
+  version = "0.1.0"
 
 [[constraint]]
   branch = "master"
@@ -54,15 +54,15 @@
 
 [[constraint]]
   name = "github.com/c3sr/libkv"
-  branch = "master"
+  version = "0.3.0"
 
-[[constraint]]
-  branch = "master"
+[[override]]
   name = "github.com/c3sr/lock"
+  version = "0.1.0"
 
-[[constraint]]
-  branch = "master"
+[[override]]
   name = "github.com/c3sr/logger"
+  version = "0.1.0"
 
 [[constraint]]
   branch = "master"
@@ -81,28 +81,28 @@
   name = "github.com/c3sr/pipeline"
 
 [[constraint]]
-  branch = "master"
   name = "github.com/c3sr/registry"
+  version = "0.1.0"
 
 [[constraint]]
-  branch = "master"
   name = "github.com/c3sr/serializer"
+  version = "0.1.0"
 
 [[constraint]]
   branch = "master"
   name = "github.com/c3sr/tracer"
 
-[[constraint]]
-  branch = "master"
+[[override]]
   name = "github.com/c3sr/utils"
+  version = "0.1.0"
 
 [[constraint]]
   branch = "master"
   name = "github.com/c3sr/uuid"
 
-[[constraint]]
-  branch = "master"
+[[override]]
   name = "github.com/c3sr/vipertags"
+  version = "0.1.0"
 
 [[constraint]]
   branch = "master"
@@ -113,7 +113,7 @@
   revision = "9dc8f7711cb9c7afcd5c5565c8f4711a9f1d3934"
 
 [[constraint]]
-  name = "github.com/volatiletech/authboss-clientstate" 
+  name = "github.com/volatiletech/authboss-clientstate"
   revision = "a25680a62c98c34157edca002e77a943af065d8c"
 
 [[constraint]]

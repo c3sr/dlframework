@@ -289,12 +289,12 @@
   revision = "e84a4d6868cd1defc720d0ec167e5233e7cc5b83"
 
 [[projects]]
-  branch = "master"
-  digest = "1:3e3f58d4204ffe581c8bf7140026b17cfa55704e2e4f534398a234a19bd08af1"
+  digest = "1:b361cb418fa9e2e100ed6639ad998f24458fd5a620a2225ea14d4f73d99040bf"
   name = "github.com/c3sr/config"
   packages = ["."]
   pruneopts = "UT"
-  revision = "e9d07ff805c35518081968c3cdb61e2a452cacff"
+  revision = "35ed8e2450bf72580413486a801a469faeb04189"
+  version = "v0.1.0"
 
 [[projects]]
   branch = "master"
@@ -436,8 +436,7 @@
   revision = "8456d14bfc12275acc4957e582269c9c01236b79"
 
 [[projects]]
-  branch = "master"
-  digest = "1:e055cca081a3b2986aa48b07d8069fef83fa3a1df1e0bdd4bf9ef676c903c163"
+  digest = "1:01dab8d40cf5c304ba431248fbf44b6cba8b03dee3c57a31dacecadde565985b"
   name = "github.com/c3sr/libkv"
   packages = [
     ".",
@@ -446,22 +445,22 @@
     "store/mock",
   ]
   pruneopts = "UT"
-  revision = "e1d73a0bfd37479cd54307ed653dc251d7769b79"
+  revision = "c4babe84b7d1631c16262cec87705aec2398092b"
+  version = "v0.3.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:6d94568ec9ffc97642519cfe50a2439ecffff3b842d3243d144186cb4955bce0"
+  digest = "1:90c708bb559964c35cc3e887c78b542ab576bb1894e748e28c6cc41ddd15943b"
   name = "github.com/c3sr/lock"
   packages = [
     ".",
     "registry",
   ]
   pruneopts = "UT"
-  revision = "018daba6590bc23852a4472d676d16c0f59f0ee2"
+  revision = "4002142a6a52b64cbc136d780ab0f63761906817"
+  version = "v0.1.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:d7cc3e530f4d861d300fedf80123c0ed537b145bb876a513498a235bc1020d28"
+  digest = "1:453f416161e6ae53e8f4712096452b91a7afc3b98cff1568e3652d7821fa3b39"
   name = "github.com/c3sr/logger"
   packages = [
     ".",
@@ -469,7 +468,8 @@
     "hooks/logruzio",
   ]
   pruneopts = "UT"
-  revision = "3a1b4f2fe0a8cff889e1ee8fbda6967bd9c0d550"
+  revision = "159591d2749003f68b0dacfadf03ab90a18f66c1"
+  version = "v0.1.0"
 
 [[projects]]
   branch = "master"
@@ -532,16 +532,15 @@
   revision = "8fd69e91cfc64ad360bdce798a661170ede09f1b"
 
 [[projects]]
-  branch = "master"
-  digest = "1:960862a51de332377b47bf9ab87c0e4611011ab695207af0d2e5eba1c8023167"
+  digest = "1:147c1b2799bc807f30534121b7c2e396aee020071a8a0c4fd2dd37ff49e43138"
   name = "github.com/c3sr/registry"
   packages = ["."]
   pruneopts = "UT"
-  revision = "bd8759510b62379eb1d4693db2c9d9a98fe2b8d3"
+  revision = "d4a03737b51b2c0f3af086cfe23a5d1bc4799108"
+  version = "v0.1.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:e5eb682c230f1ffaefef73d8ed83b7b516fdbc0912bb9fc4ea5485ab0994b00e"
+  digest = "1:dd2fe155dedbdca5f8179858fcab613815616a1a771ce60a7eec92f04dd86e37"
   name = "github.com/c3sr/serializer"
   packages = [
     ".",
@@ -550,7 +549,8 @@
     "jsonpb",
   ]
   pruneopts = "UT"
-  revision = "cdbfac2bf33ce9a86b7d33e2a10fad9c04892054"
+  revision = "90e6ae01ee1bfad0efb0ab324347568b7895480a"
+  version = "v0.1.0"
 
 [[projects]]
   branch = "master"
@@ -592,8 +592,7 @@
   revision = "43da420e1ef6bf956c8dfd78d3cce306c1cfa781"
 
 [[projects]]
-  branch = "master"
-  digest = "1:f0a6f24b1ef3781ffc978e220516c02a40047a9c5dda85cb8307c4bfff8a963c"
+  digest = "1:6deaa9ac56541b4fec264313a1e34ffd3c9ce71718cdd9065ec601e4a75b6496"
   name = "github.com/c3sr/utils"
   packages = [
     ".",
@@ -601,7 +600,8 @@
     "promise",
   ]
   pruneopts = "UT"
-  revision = "1131f94737fa162c7abd799d49e0e61d28827bd7"
+  revision = "8c94d0bf9baa1095effd041da69653e1103b68c7"
+  version = "v0.1.0"
 
 [[projects]]
   branch = "master"
@@ -612,12 +612,12 @@
   revision = "16bb3b3c5514e4f48dc6740cd05a6e0b55a56353"
 
 [[projects]]
-  branch = "master"
-  digest = "1:da993593fb42403a3695f952e3666346fc3b510862c3a1086006c7566fa004b9"
+  digest = "1:77555ff63552bbfc1b00aa018fb013e76256d70764ded9cd5a1dad891a740681"
   name = "github.com/c3sr/vipertags"
   packages = ["."]
   pruneopts = "UT"
-  revision = "c54404b591155101716768833b5eee64aca9a3cd"
+  revision = "b8a9fd68c520fe07ffbf7f642b7e73eac2a0434f"
+  version = "v0.1.0"
 
 [[projects]]
   branch = "master"

@@ -7,6 +7,7 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+  "time"
 
 	cpuinfo "github.com/c3sr/machine/info"
 	nvidiasmi "github.com/c3sr/nvidia-smi"
@@ -16,6 +17,14 @@ import (
 	store "github.com/c3sr/libkv/store"
 	lock "github.com/c3sr/lock/registry"
 	"github.com/c3sr/registry"
+)
+
+const (
+  // Sometimes put fail with too many connection, we want to retry
+	PutRetryMax = 5
+
+  // Rest for some time interval before we retry
+  PutRetrySleep = 20 * time.Millisecond
 )
 
 type base struct {
@@ -49,13 +58,13 @@ func (b *base) PublishInPredictor(host, prefix string) error {
 		frameworks[ii] = &frameworks0[ii]
 	}
 
-	rgs.Put(prefix, nil, &store.WriteOptions{IsDir: true})
+	// rgs.Put(prefix, nil, &store.WriteOptions{IsDir: true})
 
 	var wg sync.WaitGroup
 	models := b.Framework.Models()
 	wg.Add(len(models))
 	for _, model := range models {
-		go func(model dl.ModelManifest) {
+		func(model dl.ModelManifest) {
 			defer wg.Done()
 			mn, err := model.CanonicalName()
 			if err != nil {
@@ -88,7 +97,12 @@ func (b *base) PublishInPredictor(host, prefix string) error {
 				return
 			}
 			key := path.Join(prefix, toPath(mn), "agent-"+host)
-			rgs.Put(key, bts, &store.WriteOptions{TTL: ttl, IsDir: false})
+      for ii := 0; ii < PutRetryMax; ii++ {
+        if err := rgs.Put(key, bts, &store.WriteOptions{TTL: ttl, IsDir: false}); err == nil {
+          break
+        }
+        time.Sleep(PutRetrySleep)
+      }
 		}(model)
 	}
 
@@ -115,57 +129,76 @@ func (b *base) PublishInRegistery(prefix string) error {
 
 	prefix = path.Join(config.App.Name, prefix)
 
-	rgs.Put(prefix, nil, &store.WriteOptions{IsDir: true})
+	// rgs.Put(prefix, nil, &store.WriteOptions{IsDir: true})
 
-	locker := lock.New(rgs)
-	locker.Lock(prefix)
-	defer locker.Unlock(prefix)
+  err = func() error {
+    locker := lock.New(rgs)
 
-	frameworksKey := path.Join(prefix, "frameworks")
+    for ii := 0; ii < PutRetryMax; ii++ {
+      if err := locker.Lock(prefix); err == nil {
+        break
+      }
+      time.Sleep(PutRetrySleep * 10)
+    }
 
-	kv, err := rgs.Get(frameworksKey)
-	if err != nil {
-		if ok, e := rgs.Exists(frameworksKey); e == nil && ok {
-			log.WithError(err).Errorf("cannot get value for key %v", frameworksKey)
-			return err
-		}
-		kv = &store.KVPair{
-			Key:   frameworksKey,
-			Value: []byte{},
-		}
-	}
-	found := false
-	val := strings.TrimSpace(string(kv.Value))
-	frameworkLines := strings.Split(val, "\n")
-	for _, name := range frameworkLines {
-		if name == cn {
-			found = true
-			break
-		}
-	}
-	if !found {
-		frameworkLines = append(frameworkLines, cn)
-		newVal := strings.TrimSpace(strings.Join(frameworkLines, "\n"))
-		rgs.AtomicPut(frameworksKey, []byte(newVal), kv, nil)
-	}
+	  defer locker.Unlock(prefix)
 
-	key := path.Join(prefix, toPath(cn))
-	rgs.Put(key, nil, &store.WriteOptions{TTL: ttl, IsDir: true})
+	  frameworksKey := path.Join(prefix, "frameworks")
 
-	key = path.Join(key, "manifest.json")
-	bts, err := marshaler.Marshal(&framework)
-	if err != nil {
-		return err
-	}
-	if err := rgs.Put(key, bts, &store.WriteOptions{TTL: ttl, IsDir: false}); err != nil {
-		return err
-	}
+	  kv, err := rgs.Get(frameworksKey)
+	  if err != nil {
+		  if ok, e := rgs.Exists(frameworksKey); e == nil && ok {
+			  log.WithError(err).Errorf("cannot get value for key %v", frameworksKey)
+			  return err
+		  }
+		  kv = &store.KVPair{
+			  Key:   frameworksKey,
+			  Value: []byte{},
+		  }
+	  }
+	  found := false
+	  val := strings.TrimSpace(string(kv.Value))
+	  frameworkLines := strings.Split(val, "\n")
+	  for _, name := range frameworkLines {
+		  if name == cn {
+			  found = true
+			  break
+		  }
+	  }
+	  if !found {
+		  frameworkLines = append(frameworkLines, cn)
+		  newVal := strings.TrimSpace(strings.Join(frameworkLines, "\n"))
+		  rgs.AtomicPut(frameworksKey, []byte(newVal), kv, nil)
+  	}
+
+	  key := path.Join(prefix, toPath(cn))
+	  // rgs.Put(key, nil, &store.WriteOptions{TTL: ttl, IsDir: true})
+
+	  key = path.Join(key, "manifest.json")
+	  bts, err := marshaler.Marshal(&framework)
+	  if err != nil {
+		  return err
+	  }
+
+    for ii := 0; ii < PutRetryMax; ii++ {
+      if err := rgs.Put(key, bts, &store.WriteOptions{TTL: ttl, IsDir: false}); err == nil {
+        break
+      }
+      time.Sleep(PutRetrySleep)
+    }
+
+    return err
+  }()
+
+  if err != nil {
+    return err
+  }
 
 	var wg sync.WaitGroup
 	models := framework.Models()
 	wg.Add(len(models))
 	for _, model := range models {
-		go func(model dl.ModelManifest) {
+		func(model dl.ModelManifest) {
 			defer wg.Done()
 			mn, err := model.CanonicalName()
 			if err != nil {
@@ -176,7 +209,12 @@ func (b *base) PublishInRegistery(prefix string) error {
 				return
 			}
 			key := path.Join(prefix, toPath(mn), "manifest.json")
-			rgs.Put(key, bts, &store.WriteOptions{TTL: ttl, IsDir: false})
+			for ii := 0; ii < PutRetryMax; ii++ {
+        if err := rgs.Put(key, bts, &store.WriteOptions{TTL: ttl, IsDir: false}); err == nil {
+          break
+        }
+        time.Sleep(PutRetrySleep)
+      }
 		}(model)
 	}
 

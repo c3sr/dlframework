@@ -17,6 +17,7 @@ import (
 	"github.com/c3sr/parallel/tunny"
 	kv "github.com/c3sr/registry"
 	"github.com/c3sr/serializer"
+	"github.com/c3sr/libkv/store"
 )
 
 type frameworksTy struct {
@@ -75,14 +76,16 @@ func (f frameworksTy) Manifests() ([]*webmodels.DlframeworkFrameworkManifest, er
 
 	prefixKey := path.Join(config.App.Name, "registry")
 	frameworksKey := path.Join(prefixKey, "frameworks")
-	frameworksValue, err := rgs.Get(frameworksKey)
+	frameworksValue, err := rgs.List(frameworksKey)
 	if err != nil {
 		return nil, err
 	}
-	frameworks, err := f.ProcessFrameworkNames(frameworksValue.Value)
+
+	frameworks, err := f.ProcessFrameworkNames(frameworksValue)
 	if err != nil {
 		return nil, err
 	}
+
 	for _, framework := range frameworks {
 		wg.Add(1)
 		frameworkName, frameworkVersion := framework[0], framework[1]
@@ -161,11 +164,10 @@ func (frameworksTy) FilterManifests(
 	return []*webmodels.DlframeworkFrameworkManifest{res[0]}, nil
 }
 
-func (f frameworksTy) ProcessFrameworkNames(buf []byte) ([][]string, error) {
-	lines := strings.Split(string(buf), "\n")
+func (f frameworksTy) ProcessFrameworkNames(pairs []*store.KVPair) ([][]string, error) {
 	res := [][]string{}
-	for _, line := range lines {
-		res = append(res, strings.Split(line, ":"))
+	for _, p := range pairs {
+		res = append(res, strings.Split(string(p.Value), ":"))
 	}
 	return res, nil
 }

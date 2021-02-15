@@ -54,11 +54,7 @@
 
 [[constraint]]
   name = "github.com/c3sr/libkv"
-  version = "0.3.0"
-
-[[override]]
-  name = "github.com/c3sr/lock"
-  version = "0.1.0"
+  version = "0.3.1"
 
 [[override]]
   name = "github.com/c3sr/logger"

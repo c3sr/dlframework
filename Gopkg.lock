@@ -436,7 +436,7 @@
   revision = "8456d14bfc12275acc4957e582269c9c01236b79"
 
 [[projects]]
-  digest = "1:01dab8d40cf5c304ba431248fbf44b6cba8b03dee3c57a31dacecadde565985b"
+  digest = "1:527e18f5aa47b4ab80ccbcfcac8b8905e1e87d78d4a0db68ff311dbd42fb2992"
   name = "github.com/c3sr/libkv"
   packages = [
     ".",
@@ -445,19 +445,8 @@
     "store/mock",
   ]
   pruneopts = "UT"
-  revision = "c4babe84b7d1631c16262cec87705aec2398092b"
-  version = "v0.3.0"
-
-[[projects]]
-  digest = "1:90c708bb559964c35cc3e887c78b542ab576bb1894e748e28c6cc41ddd15943b"
-  name = "github.com/c3sr/lock"
-  packages = [
-    ".",
-    "registry",
-  ]
-  pruneopts = "UT"
-  revision = "4002142a6a52b64cbc136d780ab0f63761906817"
-  version = "v0.1.0"
+  revision = "5fc3ba5881dce4d1f457d37f541f16401c356604"
+  version = "v0.3.1"
 
 [[projects]]
   digest = "1:453f416161e6ae53e8f4712096452b91a7afc3b98cff1568e3652d7821fa3b39"
@@ -2857,7 +2846,6 @@
     "github.com/c3sr/image",
     "github.com/c3sr/image/types",
     "github.com/c3sr/libkv/store",
-    "github.com/c3sr/lock/registry",
     "github.com/c3sr/logger",
     "github.com/c3sr/logger/hooks",
     "github.com/c3sr/machine/info",

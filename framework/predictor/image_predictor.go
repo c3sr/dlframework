@@ -38,6 +38,7 @@ type PreprocessOptions struct {
 	Layout          raiimage.Layout
 	CropMethod      cutter.AnchorMode
 	CropRatio       float32
+	CropDims        []int
 }
 
 type ImagePredictor struct {
@@ -110,6 +111,35 @@ func (p ImagePredictor) GetInputDimensions() ([]int, error) {
 func (p ImagePredictor) GetMeanPath() string {
 	model := p.Model
 	return dlframework.CleanString(filepath.Join(p.WorkDir, model.GetName()+".mean"))
+}
+
+func (p ImagePredictor) GetCropDimensions() ([]int, error) {
+	model := p.Model
+	modelInputs := model.GetInputs()
+	typeParameters := modelInputs[0].GetParameters()
+	if typeParameters == nil {
+		return nil, errors.New("invalid type parameters")
+	}
+	pdims, ok := typeParameters["crop_dimensions"]
+	if !ok {
+		return nil, nil
+	}
+
+	pdimsVal := pdims.GetValue()
+	if pdimsVal == "" {
+		return nil, errors.New("invalid mean image")
+	}
+
+	var vals []int
+	if err := yaml.Unmarshal([]byte(pdimsVal), &vals); err == nil {
+		return vals, nil
+	}
+	var val int
+	if err := yaml.Unmarshal([]byte(pdimsVal), &val); err != nil {
+		return nil, errors.Errorf("unable to get crop dimensions %v as an int or slice", pdimsVal)
+	}
+
+	return []int{val, val}, nil
 }
 
 func (p ImagePredictor) GetMeanImage() ([]float32, error) {
@@ -384,6 +414,10 @@ func (p ImagePredictor) GetPreprocessOptions() (PreprocessOptions, error) {
 	if err != nil {
 		return PreprocessOptions{}, err
 	}
+	cDims, err := p.GetCropDimensions()
+	if err != nil {
+		return PreprocessOptions{}, err
+	}
 	scale, err := p.GetScale()
 	if err != nil {
 		return PreprocessOptions{}, err
@@ -422,6 +456,7 @@ func (p ImagePredictor) GetPreprocessOptions() (PreprocessOptions, error) {
 		Layout:          p.GetLayout(raiimage.HWCLayout),
 		CropMethod:      p.GetCropMethod(cutter.Centered),
 		CropRatio:       p.GetCropRatio(1.0),
+		CropDims:       cDims,
 	}
 
 	return preprocOpts, nil

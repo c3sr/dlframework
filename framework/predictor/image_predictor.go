@@ -32,6 +32,7 @@ type PreprocessOptions struct {
 	Scale           []float32
 	Dims            []int
 	MaxDimension    *int
+	MinDimension    *int
 	KeepAspectRatio *bool
 	ColorMode       types.Mode
 	Layout          raiimage.Layout
@@ -195,6 +196,33 @@ func (p ImagePredictor) GetMaxDimension() (int, error) {
 	var val int
 	if err := yaml.Unmarshal([]byte(pscaleVal), &val); err != nil {
 		return 0, errors.Errorf("unable to get max dimension %v as a int", pscaleVal)
+	}
+
+	return val, nil
+}
+
+func (p ImagePredictor) GetMinDimension() (int, error) {
+	model := p.Model
+	modelInputs := model.GetInputs()
+	if len(modelInputs) == 0 {
+		return 0, errors.New("no inputs")
+	}
+	typeParameters := modelInputs[0].GetParameters()
+	if typeParameters == nil {
+		return 0, errors.New("invalid type parameters")
+	}
+	pscale, ok := typeParameters["min_dimension"]
+	if !ok {
+		return 0, errors.New("no min dimension")
+	}
+	pscaleVal := pscale.GetValue()
+	if pscaleVal == "" {
+		return 0, errors.New("no min dimension value")
+	}
+
+	var val int
+	if err := yaml.Unmarshal([]byte(pscaleVal), &val); err != nil {
+		return 0, errors.Errorf("unable to get min dimension %v as a int", pscaleVal)
 	}
 
 	return val, nil
@@ -371,6 +399,11 @@ func (p ImagePredictor) GetPreprocessOptions() (PreprocessOptions, error) {
 	if err != nil {
 		maxDim = nil
 	}
+	minDim0, err := p.GetMinDimension()
+	minDim := &minDim0
+	if err != nil {
+		minDim = nil
+	}
 	keepAspectRatio0, err := p.GetKeepAspectRatio()
 	keepAspectRatio := &keepAspectRatio0
 	if err != nil {
@@ -383,6 +416,7 @@ func (p ImagePredictor) GetPreprocessOptions() (PreprocessOptions, error) {
 		Scale:           scale,
 		Dims:            imageDims,
 		MaxDimension:    maxDim,
+		MinDimension:    minDim,
 		KeepAspectRatio: keepAspectRatio,
 		ColorMode:       p.GetColorMode(imageTypes.RGBMode),
 		Layout:          p.GetLayout(raiimage.HWCLayout),

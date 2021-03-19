@@ -10,7 +10,7 @@ import (
 	"github.com/c3sr/dlframework/httpapi/restapi/operations/predict"
 	"github.com/c3sr/dlframework/httpapi/restapi/operations/registry"
 
-	"github.com/volatiletech/authboss/remember"
+	"github.com/volatiletech/authboss/v3/remember"
 )
 
 func ConfigureAPI(api *operations.DlframeworkAPI) http.Handler {

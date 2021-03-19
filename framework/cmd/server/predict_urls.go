@@ -16,21 +16,21 @@ import (
 	"time"
 
 	sourcepath "github.com/GeertJohan/go-sourcepath"
-	"github.com/Unknwon/com"
-	"github.com/k0kubun/pp"
+	"github.com/unknwon/com"
+	"github.com/k0kubun/pp/v3"
 	"github.com/levigross/grequests"
 	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
 	"github.com/c3sr/archive"
-	"github.com/c3sr/database"
-	mongodb "github.com/c3sr/database/mongodb"
+//	"github.com/c3sr/database"
+//	mongodb "github.com/c3sr/database/mongodb"
 	dl "github.com/c3sr/dlframework"
 	"github.com/c3sr/dlframework/framework/agent"
 	dlcmd "github.com/c3sr/dlframework/framework/cmd"
 	"github.com/c3sr/dlframework/framework/options"
 	common "github.com/c3sr/dlframework/framework/predictor"
 	"github.com/c3sr/dlframework/steps"
-	"github.com/c3sr/evaluation"
+//	"github.com/c3sr/evaluation"
 	machine "github.com/c3sr/machine/info"
 	nvidiasmi "github.com/c3sr/nvidia-smi"
 	"github.com/c3sr/pipeline"
@@ -38,7 +38,7 @@ import (
 	"github.com/c3sr/uuid"
 	"github.com/spf13/cobra"
 	jaeger "github.com/uber/jaeger-client-go"
-	"gopkg.in/mgo.v2/bson"
+//	"gopkg.in/mgo.v2/bson"
 )
 
 var (
@@ -80,6 +80,7 @@ func runPredictUrlsCmd(c *cobra.Command, args []string) error {
 	}
 	log.WithField("model", modelName).Info("running predict urls")
 
+/*
 	if publishToDatabase == true {
 		opts := []database.Option{}
 		if len(databaseEndpoints) != 0 {
@@ -120,6 +121,7 @@ func runPredictUrlsCmd(c *cobra.Command, args []string) error {
 		defer performanceTable.Close()
 
 	}
+*/
 
 	predictors, err := agent.GetPredictors(framework)
 	if err != nil {
@@ -234,7 +236,7 @@ func runPredictUrlsCmd(c *cobra.Command, args []string) error {
 		urls = append(urls, tmp...)
 	}
 
-	inputPredictionIds := []bson.ObjectId{}
+//	inputPredictionIds := []bson.ObjectId{}
 
 	preprocessOptions, err := predictor.GetPreprocessOptions()
 	if err != nil {
@@ -333,7 +335,7 @@ func runPredictUrlsCmd(c *cobra.Command, args []string) error {
 	}
 
 	hostName, _ := os.Hostname()
-	hostIP := getHostIP()
+//	hostIP := getHostIP()
 	metadata := map[string]string{}
 	if useGPU {
 		if bts, err := json.Marshal(nvidiasmi.Info); err == nil {
@@ -505,6 +507,7 @@ func runPredictUrlsCmd(c *cobra.Command, args []string) error {
 		return nil
 	}
 
+/*
 	cnt := 0
 	cntTop1 := 0
 	cntTop5 := 0
@@ -656,6 +659,8 @@ func runPredictUrlsCmd(c *cobra.Command, args []string) error {
 	}
 
 	log.WithField("model", modelName).Info("inserted evaluation information")
+
+*/
 
 	return nil
 }

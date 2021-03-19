@@ -15,7 +15,7 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/strfmt"
 	"github.com/golang/snappy"
-	"github.com/k0kubun/pp"
+	"github.com/k0kubun/pp/v3"
 	"github.com/pkg/errors"
 	dl "github.com/c3sr/dlframework"
 	webmodels "github.com/c3sr/dlframework/httpapi/models"

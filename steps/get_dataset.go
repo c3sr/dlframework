@@ -1,4 +1,5 @@
 package steps
+/*
 
 import (
 	"context"
@@ -52,3 +53,4 @@ func (p getDataset) do(ctx context.Context, in0 interface{}, opts *pipeline.Opti
 func (p getDataset) Close() error {
 	return nil
 }
+*/

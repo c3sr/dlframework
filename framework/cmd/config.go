@@ -3,9 +3,9 @@ package cmd
 import (
 	"path/filepath"
 
-	"github.com/k0kubun/pp"
+	"github.com/k0kubun/pp/v3"
 
-	"github.com/Unknwon/com"
+	"github.com/unknwon/com"
 	"github.com/fatih/color"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/c3sr/config"

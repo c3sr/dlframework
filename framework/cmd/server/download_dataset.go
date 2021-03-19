@@ -1,10 +1,11 @@
 package server
+/*
 
 import (
 	"context"
 	"strings"
 
-	"github.com/k0kubun/pp"
+	"github.com/k0kubun/pp/v3"
 	"github.com/c3sr/dldataset"
 	"github.com/spf13/cobra"
 )
@@ -73,3 +74,4 @@ func init() {
 	downloadDatasetCmd.PersistentFlags().StringVar(&downloadDatasetName, "name", "ilsvrc2012_validation_224", "dataset name (e.g. \"ilsvrc2012_validation_folder\")")
 	downloadDatasetCmd.PersistentFlags().BoolVar(&downloadAll, "all", false, "download all the available datasets")
 }
+*/

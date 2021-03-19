@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/k0kubun/pp"
+	"github.com/k0kubun/pp/v3"
 
 	"github.com/c3sr/config"
 	dl "github.com/c3sr/dlframework"

@@ -11,7 +11,7 @@ import (
 	"github.com/VividCortex/robustly"
 	"github.com/cockroachdb/cmux"
 	"github.com/facebookgo/freeport"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"github.com/c3sr/dlframework"
 	"github.com/c3sr/dlframework/framework/agent"

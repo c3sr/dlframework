@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/volatiletech/authboss"
+	"github.com/volatiletech/authboss/v3"
 )
 
 var nextUserID int

@@ -7,13 +7,13 @@ import (
 	"strings"
 
 	"github.com/h2non/filetype"
-	"github.com/k0kubun/pp"
+	"github.com/k0kubun/pp/v3"
 	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
-	"github.com/c3sr/dldataset"
+//	"github.com/c3sr/dldataset"
 	"github.com/c3sr/dlframework/framework/predictor"
 	"github.com/c3sr/image"
-	"github.com/c3sr/image/types"
+//	"github.com/c3sr/image/types"
 	"github.com/c3sr/pipeline"
 	"github.com/c3sr/tracer"
 )
@@ -68,6 +68,7 @@ func (p readImage) do(ctx context.Context, in0 interface{}, opts *pipeline.Optio
 	switch in0 := in0.(type) {
 	case io.Reader:
 		in = in0
+/*
 	case dldataset.LabeledData:
 		data, err := in0.Data()
 		if err != nil {
@@ -92,6 +93,7 @@ func (p readImage) do(ctx context.Context, in0 interface{}, opts *pipeline.Optio
 			return errors.Errorf("expecting a io.Reader or image for read image step, but got %v", in0)
 
 		}
+*/
 	default:
 		return errors.Errorf("expecting a io.Reader or dataset element for read image step, but got %v", in0)
 	}

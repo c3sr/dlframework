@@ -9,10 +9,10 @@ import (
 	"flag"
 	"net/http"
 
-	"github.com/volatiletech/authboss"
-	_ "github.com/volatiletech/authboss/auth"
-	"github.com/volatiletech/authboss/defaults"
-	_ "github.com/volatiletech/authboss/logout"
+	"github.com/volatiletech/authboss/v3"
+	_ "github.com/volatiletech/authboss/v3/auth"
+	"github.com/volatiletech/authboss/v3/defaults"
+	_ "github.com/volatiletech/authboss/v3/logout"
 	"github.com/volatiletech/authboss-clientstate"
 
 	"github.com/aarondl/tpl"

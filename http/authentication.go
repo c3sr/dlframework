@@ -9,9 +9,9 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/c3sr/dlframework/httpapi/models"
 	"github.com/c3sr/dlframework/httpapi/restapi/operations/authentication"
-	auth "github.com/volatiletech/authboss/auth"
-	register "github.com/volatiletech/authboss/register"
-	logout "github.com/volatiletech/authboss/logout"
+	auth "github.com/volatiletech/authboss/v3/auth"
+	register "github.com/volatiletech/authboss/v3/register"
+	logout "github.com/volatiletech/authboss/v3/logout"
 )
 
 func LoginHandler(params authentication.LoginParams, principal *models.User) middleware.Responder {

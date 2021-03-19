@@ -13,7 +13,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/k0kubun/pp"
+	"github.com/k0kubun/pp/v3"
 	"github.com/oliamb/cutter"
 	"github.com/pkg/errors"
 	"github.com/c3sr/dlframework"

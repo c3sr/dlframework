@@ -1,3 +1,3 @@
 package dlframework
 
-var Version = "0.3.11"
+var Version = "1.0.0"

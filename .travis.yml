@@ -1,17 +1,10 @@
 language: go
 jobs:
   include:
-    - go: 1.12.x
-    - go: tip
-  allow_failures:
-    - go: tip
+    - go: 1.15
 os: linux
 dist: xenial
-before_install:
-  - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 install:
-  - dep ensure -v -vendor-only
   - go build -tags=nogpu ./...
 script: true
 after_script: true
-#  - go test -race -v ./...

@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/Unknwon/com"
+	"github.com/unknwon/com"
 	"github.com/pkg/errors"
 	"github.com/c3sr/config"
 )

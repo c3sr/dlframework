@@ -8,7 +8,7 @@ import (
 
 	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
-	"github.com/c3sr/dldataset"
+//	"github.com/c3sr/dldataset"
 	dl "github.com/c3sr/dlframework"
 	"github.com/c3sr/dlframework/framework/options"
 	"github.com/c3sr/dlframework/framework/predictor"
@@ -23,7 +23,7 @@ import (
 	"golang.org/x/sync/syncmap"
 	"google.golang.org/grpc"
 
-	_ "github.com/c3sr/dldataset/vision"
+//	_ "github.com/c3sr/dldataset/vision"
 )
 
 type Agent struct {
@@ -391,6 +391,8 @@ func (p *Agent) Images(ctx context.Context, req *dl.ImagesRequest) (*dl.Features
 // 	return nil
 // }
 
+
+/*
 // Dataset method receives a single dataset and runs
 // the predictor on all elements of the dataset.
 // The result is a prediction feature list.
@@ -455,17 +457,21 @@ func (p *Agent) dataset(ctx context.Context, req *dl.DatasetRequest) (<-chan int
 
 	return output, nil
 }
+*/
 
 // Dataset method receives a single dataset and runs
 // the predictor on all elements of the dataset.
 // The result is a prediction feature list.
 func (p *Agent) Dataset(ctx context.Context, req *dl.DatasetRequest) (*dl.FeaturesResponse, error) {
+	return nil, fmt.Errorf("Temporarily disable dataset.")
+	/*
 	output, err := p.dataset(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
 	return p.toFeaturesResponse(ctx, output, req.GetOptions())
+	*/
 }
 
 // Dataset method receives a single dataset and runs

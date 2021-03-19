@@ -3,7 +3,7 @@ package http
 import (
 	"sort"
 
-	"github.com/k0kubun/pp"
+	"github.com/k0kubun/pp/v3"
 
 	"github.com/Masterminds/semver"
 	"github.com/go-openapi/runtime/middleware"

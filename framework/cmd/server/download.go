@@ -8,6 +8,6 @@ var downloadCmd = &cobra.Command{
 }
 
 func init() {
-	downloadCmd.AddCommand(downloadDatasetCmd)
+//	downloadCmd.AddCommand(downloadDatasetCmd)
 	downloadCmd.AddCommand(downloadModelsCmd)
 }

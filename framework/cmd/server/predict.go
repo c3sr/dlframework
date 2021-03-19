@@ -9,7 +9,7 @@ import (
 	"github.com/c3sr/config"
 	"github.com/c3sr/database"
 	"github.com/c3sr/database/mongodb"
-	"github.com/c3sr/evaluation"
+//	"github.com/c3sr/evaluation"
 	nvidiasmi "github.com/c3sr/nvidia-smi"
 	"github.com/c3sr/tracer"
 	"github.com/c3sr/tracer/jaeger"
@@ -35,10 +35,10 @@ var (
 	databaseName               string
 	databaseEndpoints          []string
 	db                         database.Database
-	evaluationTable            *evaluation.EvaluationCollection
-	modelAccuracyTable         *evaluation.ModelAccuracyCollection
-	performanceTable           *evaluation.PerformanceCollection
-	inputPredictionsTable      *evaluation.InputPredictionCollection
+//	evaluationTable            *evaluation.EvaluationCollection
+//	modelAccuracyTable         *evaluation.ModelAccuracyCollection
+//	performanceTable           *evaluation.PerformanceCollection
+//	inputPredictionsTable      *evaluation.InputPredictionCollection
 	DefaultChannelBuffer       = 100000
 	fixTracerEndpoints         = tracerutils.FixEndpoints("http://", "9411", "/api/v1/spans")
 	baseDir                    string
@@ -110,9 +110,9 @@ func init() {
 	predictCmd.PersistentFlags().BoolVar(&timeoutOptionSet, "time_out", true, "kill the agent after an amount of time. Defaults to be false.")
 	predictCmd.PersistentFlags().BoolVar(&saveInferenceResult, "save_inference", false, "Saving inference result affects profiling on CPU. Defaults to be false.")
 
-	predictCmd.AddCommand(predictDatasetCmd)
+//	predictCmd.AddCommand(predictDatasetCmd)
 	predictCmd.AddCommand(predictUrlsCmd)
-	predictCmd.AddCommand(predictRawCmd)
+//	predictCmd.AddCommand(predictRawCmd)
 	// predictCmd.AddCommand(predictWorkloadCmd)
 	// predictCmd.AddCommand(predictQPSCmd)
 }

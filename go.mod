@@ -15,6 +15,7 @@ require (
 	github.com/VividCortex/ewma v1.1.1 // indirect
 	github.com/VividCortex/robustly v0.0.0-20210119222408-48da771af5f6
 	github.com/aarondl/tpl v0.0.0-20180717141031-b5afe9b3122c
+	github.com/apache/arrow/go/arrow v0.0.0-20201229220542-30ce2eb5d4dc // indirect
 	github.com/c3sr/archive v1.0.0
 	github.com/c3sr/cmd v1.0.0
 	github.com/c3sr/config v1.0.1
@@ -83,6 +84,7 @@ require (
 	github.com/volatiletech/authboss v2.4.1+incompatible // indirect
 	github.com/volatiletech/authboss-clientstate v0.0.0-20200826024349-8d4e74078241
 	github.com/volatiletech/authboss/v3 v3.0.3
+	go4.org/unsafe/assume-no-moving-gc v0.0.0-20201222180813-1025295fd063 // indirect
 	golang.org/x/crypto v0.0.0-20210317152858-513c2a44f670 // indirect
 	golang.org/x/net v0.0.0-20210316092652-d523dce5a7f4
 	golang.org/x/oauth2 v0.0.0-20210313182246-cd4f82c27b84 // indirect
@@ -91,5 +93,5 @@ require (
 	google.golang.org/grpc v1.36.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	gopkg.in/yaml.v2 v2.4.0
-	gorgonia.org/tensor v0.9.19
+	gorgonia.org/tensor v0.9.14
 )

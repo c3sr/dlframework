@@ -9,7 +9,6 @@ release: docker_build docker_push ## Build and push Docker image
 # Image and binary can be overidden with env vars.
 DOCKER_IMAGE ?= c3sr/base
 
-
 # Get System architecture
 # for now... ask carl how best to get this
 ARCH ?= $(shell go env GOARCH)
@@ -20,13 +19,17 @@ GIT_COMMIT = $(strip $(shell git rev-parse --short HEAD))
 # Get the version number from the code
 CODE_VERSION = v$(strip $(shell cat ../../VERSION))
 
-
 # Find out if the working directory is clean
 GIT_NOT_CLEAN_CHECK = $(shell git status --porcelain)
 
 # Version of gcc to install
 GCC_VERSION = 6
-GCC_VERSION_MLPERF = 5
+
+# Version of go to install
+GO_VERSION ?= 1.15
+
+# Version of cuda to use
+CUDA_VERSION ?= 10.0
 
 # If we're releasing to Docker Hub, and we're going to mark it with the latest tag, it should exactly match a version release
 ifeq ($(MAKECMDGOALS),release)
@@ -53,54 +56,30 @@ BUILD_ARGS = --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
 			       --build-arg VCS_URL=`git config --get remote.origin.url` \
 		         --build-arg VCS_REF=$(GIT_COMMIT) \
 		         --build-arg ARCH=$(ARCH) \
-						 --build-arg GCC_VERSION=$(GCC_VERSION)
-
-BUILD_ARGS_MLPERF = --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
-             --build-arg VERSION=$(CODE_VERSION) \
-             --build-arg VCS_URL=`git config --get remote.origin.url` \
-             --build-arg VCS_REF=$(GIT_COMMIT) \
-             --build-arg ARCH=$(ARCH) \
-             --build-arg GCC_VERSION=$(GCC_VERSION_MLPERF)
+						 --build-arg GCC_VERSION=$(GCC_VERSION) \
+						 --build-arg GO_VERSION=$(GO_VERSION)
 
 docker_build_gpu: ## Build GPU Docker image
 	@docker build $(BUILD_ARGS) \
-		-f Dockerfile.$(ARCH)_gpu \
-		-t $(DOCKER_IMAGE):$(ARCH)-gpu-$(DOCKER_TAG) .
-docker_build_gpu_mlperf: ## Build GPU Docker image as per MLPerf requirements
-	@docker build $(BUILD_ARGS_MLPERF) \
-		-f Dockerfile.$(ARCH)_gpu_mlperf \
-		-t $(DOCKER_IMAGE):$(ARCH)-gpu-mlperf-$(DOCKER_TAG) .
+		-f Dockerfile.$(ARCH)_gpu_cuda$(CUDA_VERSION) \
+		-t $(DOCKER_IMAGE):$(ARCH)-gpu-go$(GO_VERSION)-cuda$(CUDA_VERSION)-$(DOCKER_TAG) .
+
 docker_build_cpu:  ## Build CPU Docker image
 	@docker build $(BUILD_ARGS) \
 		-f Dockerfile.$(ARCH)_cpu \
-		-t "$(DOCKER_IMAGE):$(ARCH)-cpu-$(DOCKER_TAG)" .
-docker_build_cpu_mlperf:  ## Build CPU Docker image as per MLPerf requirements
-	@docker build $(BUILD_ARGS_MLPERF) \
-		-f Dockerfile.$(ARCH)_cpu_mlperf \
-		-t "$(DOCKER_IMAGE):$(ARCH)-cpu-mlperf-$(DOCKER_TAG)" .
+		-t "$(DOCKER_IMAGE):$(ARCH)-cpu-go$(GO_VERSION)-$(DOCKER_TAG)" .
 
 docker_build: docker_build_cpu docker_build_gpu
 
-
 docker_push_cpu: ## Tag image as latest and Push to DockerHub
-	docker tag $(DOCKER_IMAGE):$(ARCH)-cpu-$(DOCKER_TAG) $(DOCKER_IMAGE):$(ARCH)-cpu-latest
-	docker push $(DOCKER_IMAGE):$(ARCH)-cpu-$(DOCKER_TAG)
-	docker push $(DOCKER_IMAGE):$(ARCH)-cpu-latest
-
-docker_push_cpu_mlperf: ## Tag image as latest and Push to DockerHub
-	docker tag $(DOCKER_IMAGE):$(ARCH)-cpu-mlperf-$(DOCKER_TAG) $(DOCKER_IMAGE):$(ARCH)-cpu-mlperf-latest
-	docker push $(DOCKER_IMAGE):$(ARCH)-cpu-mlperf-$(DOCKER_TAG)
-	docker push $(DOCKER_IMAGE):$(ARCH)-cpu-mlperf-latest
+	docker tag $(DOCKER_IMAGE):$(ARCH)-cpu-go$(GO_VERSION)-$(DOCKER_TAG) $(DOCKER_IMAGE):$(ARCH)-cpu-go$(GO_VERSION)-latest
+	docker push $(DOCKER_IMAGE):$(ARCH)-cpu-go$(GO_VERSION)-$(DOCKER_TAG)
+	docker push $(DOCKER_IMAGE):$(ARCH)-cpu-go$(GO_VERSION)-latest
 
 docker_push_gpu: ## Tag image as latest and Push to DockerHub
-	docker tag $(DOCKER_IMAGE):$(ARCH)-gpu-$(DOCKER_TAG) $(DOCKER_IMAGE):$(ARCH)-gpu-latest
-	docker push $(DOCKER_IMAGE):$(ARCH)-gpu-$(DOCKER_TAG)
-	docker push $(DOCKER_IMAGE):$(ARCH)-gpu-latest
-
-docker_push_gpu_mlperf: ## Tag image as latest and Push to DockerHub
-	docker tag $(DOCKER_IMAGE):$(ARCH)-gpu-mlperf-$(DOCKER_TAG) $(DOCKER_IMAGE):$(ARCH)-gpu-mlperf-latest
-	docker push $(DOCKER_IMAGE):$(ARCH)-gpu-mlperf-$(DOCKER_TAG)
-	docker push $(DOCKER_IMAGE):$(ARCH)-gpu-mlperf-latest
+	docker tag $(DOCKER_IMAGE):$(ARCH)-gpu-go$(GO_VERSION)-cuda$(CUDA_VERSION)-$(DOCKER_TAG) $(DOCKER_IMAGE):$(ARCH)-gpu-go$(GO_VERSION)-cuda$(CUDA_VERSION)-gpu-latest
+	docker push $(DOCKER_IMAGE):$(ARCH)-gpu-go$(GO_VERSION)-cuda$(CUDA_VERSION)-$(DOCKER_TAG)
+	docker push $(DOCKER_IMAGE):$(ARCH)-gpu-go$(GO_VERSION)-cuda$(CUDA_VERSION)-latest
 
 docker_push: docker_push_cpu docker_push_gpu
 

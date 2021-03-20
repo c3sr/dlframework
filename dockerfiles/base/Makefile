@@ -77,7 +77,7 @@ docker_push_cpu: ## Tag image as latest and Push to DockerHub
 	docker push $(DOCKER_IMAGE):$(ARCH)-cpu-go$(GO_VERSION)-latest
 
 docker_push_gpu: ## Tag image as latest and Push to DockerHub
-	docker tag $(DOCKER_IMAGE):$(ARCH)-gpu-go$(GO_VERSION)-cuda$(CUDA_VERSION)-$(DOCKER_TAG) $(DOCKER_IMAGE):$(ARCH)-gpu-go$(GO_VERSION)-cuda$(CUDA_VERSION)-gpu-latest
+	docker tag $(DOCKER_IMAGE):$(ARCH)-gpu-go$(GO_VERSION)-cuda$(CUDA_VERSION)-$(DOCKER_TAG) $(DOCKER_IMAGE):$(ARCH)-gpu-go$(GO_VERSION)-cuda$(CUDA_VERSION)-latest
 	docker push $(DOCKER_IMAGE):$(ARCH)-gpu-go$(GO_VERSION)-cuda$(CUDA_VERSION)-$(DOCKER_TAG)
 	docker push $(DOCKER_IMAGE):$(ARCH)-gpu-go$(GO_VERSION)-cuda$(CUDA_VERSION)-latest
 

@@ -12,6 +12,16 @@ jobs:
       - script: ./push.sh docker_push_cpu
         workingDirectory: dockerfiles/base
         condition: eq(variables.isMain, true)
+  - job: GPU_CUDA100
+    timeoutInMinutes: 0
+    steps:
+      - script: docker login -u $(DOCKER_USERNAME) -p $(DOCKER_PASSWORD)
+        condition: eq(variables.isMain, true)
+      - script: CUDA_VERSION=10.0 make docker_build_gpu
+        workingDirectory: dockerfiles/base
+      - script: CUDA_VERSION=10.0 ./push.sh docker_push_gpu
+        workingDirectory: dockerfiles/base
+        condition: eq(variables.isMain, true)
   - job: GPU_CUDA101
     timeoutInMinutes: 0
     steps:
@@ -20,5 +30,45 @@ jobs:
       - script: CUDA_VERSION=10.1 make docker_build_gpu
         workingDirectory: dockerfiles/base
       - script: CUDA_VERSION=10.1 ./push.sh docker_push_gpu
+        workingDirectory: dockerfiles/base
+        condition: eq(variables.isMain, true)
+  - job: GPU_CUDA102
+    timeoutInMinutes: 0
+    steps:
+      - script: docker login -u $(DOCKER_USERNAME) -p $(DOCKER_PASSWORD)
+        condition: eq(variables.isMain, true)
+      - script: CUDA_VERSION=10.2 make docker_build_gpu
+        workingDirectory: dockerfiles/base
+      - script: CUDA_VERSION=10.2 ./push.sh docker_push_gpu
+        workingDirectory: dockerfiles/base
+        condition: eq(variables.isMain, true)
+  - job: GPU_CUDA110
+    timeoutInMinutes: 0
+    steps:
+      - script: docker login -u $(DOCKER_USERNAME) -p $(DOCKER_PASSWORD)
+        condition: eq(variables.isMain, true)
+      - script: CUDA_VERSION=11.0 make docker_build_gpu
+        workingDirectory: dockerfiles/base
+      - script: CUDA_VERSION=11.0 ./push.sh docker_push_gpu
+        workingDirectory: dockerfiles/base
+        condition: eq(variables.isMain, true)
+  - job: GPU_CUDA111
+    timeoutInMinutes: 0
+    steps:
+      - script: docker login -u $(DOCKER_USERNAME) -p $(DOCKER_PASSWORD)
+        condition: eq(variables.isMain, true)
+      - script: CUDA_VERSION=11.1 make docker_build_gpu
+        workingDirectory: dockerfiles/base
+      - script: CUDA_VERSION=11.1 ./push.sh docker_push_gpu
+        workingDirectory: dockerfiles/base
+        condition: eq(variables.isMain, true)
+  - job: GPU_CUDA112
+    timeoutInMinutes: 0
+    steps:
+      - script: docker login -u $(DOCKER_USERNAME) -p $(DOCKER_PASSWORD)
+        condition: eq(variables.isMain, true)
+      - script: CUDA_VERSION=11.2 make docker_build_gpu
+        workingDirectory: dockerfiles/base
+      - script: CUDA_VERSION=11.2 ./push.sh docker_push_gpu
         workingDirectory: dockerfiles/base
         condition: eq(variables.isMain, true)

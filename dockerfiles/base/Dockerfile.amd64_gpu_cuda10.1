@@ -24,6 +24,7 @@ LABEL org.mlmodelscope.base.build-date=$BUILD_DATE \
   org.mlmodelscope.base.schema-version="1.0"
 
 #########################################################################
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt update && apt install -y --no-install-recommends \
   build-essential \
@@ -52,11 +53,18 @@ RUN apt update && apt install -y --no-install-recommends \
   apt-transport-https \
   ca-certificates \
   bison \
+  tzdata \
+  locales \
+  subversion \
   && \
   rm -rf /var/lib/apt/lists/* && \
   update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_VERSION} 60 --slave /usr/bin/g++ g++ /usr/bin/g++-${GCC_VERSION} && \
   update-alternatives --config gcc && \
   gcc --version
+
+RUN ln -fs /usr/share/zoneinfo/America/Chicago /etc/localtime && dpkg-reconfigure --frontend noninteractive tzdata
+
+RUN locale-gen en_US.UTF-8 && update-locale LANG=en_US.UTF-8
 
 # Install CMake
 RUN curl -sSL https://cmake.org/files/v3.13/cmake-3.13.0-Linux-x86_64.tar.gz -o cmake.tar.gz \

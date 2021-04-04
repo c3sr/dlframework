@@ -1,11 +1,15 @@
 package steps
 
+import "C"
+
 import (
 	"context"
-	"encoding/json"
-	"os/exec"
+	"runtime"
+  "strconv"
 	"strings"
+  "unsafe"
 
+	"github.com/DataDog/go-python3"
 	dl "github.com/c3sr/dlframework"
 	"github.com/c3sr/dlframework/framework/predictor"
 	"github.com/c3sr/pipeline"
@@ -55,17 +59,47 @@ func (p *preprocessGeneral) do(ctx context.Context, in0 interface{}, pipelineOpt
 		return errors.Errorf("expecting a string but got %v", in0)
 	}
 
-	if len(p.methods) == 0 {
-		return src
-	}
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
 
-	preprocessMethod := strings.Split(p.methods, " ")
+	pyState := python3.PyGILState_Ensure()
+	defer python3.PyGILState_Release(pyState)
 
-	cmd := exec.Command(preprocessMethod[0], preprocessMethod[1:len(preprocessMethod)]...)
-	cmd.Stdin = strings.NewReader(src)
+	python3.PyRun_SimpleString(p.methods)
+	pyMain := python3.PyImport_AddModule("__main__")
+	pyDict := python3.PyModule_GetDict(pyMain)
+	pyPreprocess := python3.PyDict_GetItemString(pyDict, "preprocess")
 
-	jsonString, err := cmd.CombinedOutput()
+	pyCtx := python3.PyDict_New()
+	defer pyCtx.DecRef()
 
+	pySrc := python3.PyUnicode_FromString(src)
+	defer pySrc.DecRef()
+
+	npArray := pyPreprocess.CallFunctionObjArgs(pyCtx, pySrc)
+	defer npArray.DecRef()
+
+	npShapeObj := npArray.GetAttrString("shape")
+	defer npShapeObj.DecRef()
+
+	npShapeRepr := npShapeObj.Repr()
+	defer npShapeRepr.DecRef()
+
+	npShape := python3.PyUnicode_AsUTF8(npShapeRepr)
+
+	python3.PyRun_SimpleString("def contiguous(x):\n  import numpy as np\n  x = np.ascontiguousarray(x, dtype = np.float32)\n  return x.ctypes.data")
+
+	pyContiguous := python3.PyDict_GetItemString(pyDict, "contiguous")
+
+	npDataObj := pyContiguous.CallFunctionObjArgs(npArray)
+	defer npDataObj.DecRef()
+
+	npDataRepr := npDataObj.Repr()
+	defer npDataRepr.DecRef()
+
+	npDataPtr := python3.PyUnicode_AsUTF8(npDataRepr)
+
+	shape, err := parseShape(npShape)
 	if err != nil {
 		return err
 	}
@@ -74,40 +108,86 @@ func (p *preprocessGeneral) do(ctx context.Context, in0 interface{}, pipelineOpt
 
 	switch elementType {
 	case "float32":
-		var data [][][]float32
-		err = json.Unmarshal(jsonString, &data)
-		if err != nil {
-			return errors.Errorf("invalid return from preprocess methods.")
-		}
-		var flattenData []float32
-		for i, _ := range data {
-			for j, _ := range data[i] {
-				flattenData = append(flattenData, data[i][j]...)
-			}
-		}
+		flattenData, err := parseDataAsFloat(shape, npDataPtr)
+    if err != nil {
+      return err
+    }
+
 		outTensor := tensor.New(
-			tensor.WithShape(len(data), len(data[0]), len(data[0][0])),
+			tensor.WithShape(shape...),
 			tensor.WithBacking(flattenData),
 		)
+
 		return outTensor
 	case "uint8":
-		var data [][][]uint8
-		err = json.Unmarshal(jsonString, &data)
-		if err != nil {
-			return errors.Errorf("invalid return from preprocess methods.")
-		}
-		var flattenData []uint8
-		for i, _ := range data {
-			for j, _ := range data[i] {
-				flattenData = append(flattenData, data[i][j]...)
-			}
-		}
+		flattenData, err := parseDataAsUInt8(shape, npDataPtr)
+    if err != nil {
+      return err
+    }
+
 		outTensor := tensor.New(
-			tensor.WithShape(len(data), len(data[0]), len(data[0][0])),
+			tensor.WithShape(shape...),
 			tensor.WithBacking(flattenData),
 		)
 		return outTensor
 	}
 
 	return errors.Errorf("unsupported element type %v", elementType)
+}
+
+func parseShape(s string) (res []int, err error) {
+	for i := 0; i < len(s); i++ {
+		if s[i] < '0' || s[i] > '9' {
+			continue
+		}
+		j := i + 1
+		for j < len(s) && s[j] >= '0' && s[j] <= '9' {
+			j++
+		}
+		cur, err := strconv.Atoi(s[i:j])
+		if err != nil {
+			return res, err
+		}
+		res = append(res, cur)
+		i = j - 1
+	}
+	return res, err
+}
+
+func parseDataAsFloat(shape []int, s string) ([]float32, error) {
+	sz := 1
+	for _, v := range shape {
+		sz *= v
+	}
+	res := make([]float32, sz)
+
+	ptr, err := strconv.Atoi(s)
+	if err != nil {
+		return nil, err
+	}
+
+	slice := (*[1 << 30]C.float)(unsafe.Pointer(uintptr(ptr)))[:sz:sz]
+	for i := 0; i < sz; i++ {
+		res[i] = float32(slice[i])
+	}
+	return res, nil
+}
+
+func parseDataAsUInt8(shape []int, s string) ([]uint8, error) {
+	sz := 1
+	for _, v := range shape {
+		sz *= v
+	}
+	res := make([]uint8, sz)
+
+	ptr, err := strconv.Atoi(s)
+	if err != nil {
+		return nil, err
+	}
+
+	slice := (*[1 << 30]C.float)(unsafe.Pointer(uintptr(ptr)))[:sz:sz]
+	for i := 0; i < sz; i++ {
+		res[i] = uint8(slice[i])
+	}
+	return res, nil
 }

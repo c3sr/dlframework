@@ -10,6 +10,7 @@ replace (
 go 1.15
 
 require (
+	github.com/DataDog/go-python3 v0.0.0-20191126174558-6ed25e33b3c4
 	github.com/GeertJohan/go-sourcepath v0.0.0-20150925135350-83e8b8723a9b
 	github.com/Masterminds/semver v1.5.0
 	github.com/VividCortex/ewma v1.1.1 // indirect

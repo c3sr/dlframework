@@ -8,13 +8,14 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-  "os/exec"
+	// "os/exec"
 	"path/filepath"
 	"runtime"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/DataDog/go-python3"
 	sourcepath "github.com/GeertJohan/go-sourcepath"
 	"github.com/c3sr/archive"
 	dl "github.com/c3sr/dlframework"
@@ -51,6 +52,14 @@ func runPredictGeneralCmd(c *cobra.Command, args []string) error {
 			os.Exit(-1)
 		}()
 	}
+
+	// Initialize python interpreter
+	python3.Py_Initialize()
+	if !python3.Py_IsInitialized() {
+		return errors.New("⚠️ Error initializing the python interpreter")
+	}
+  // See bugs and caveats https://docs.python.org/3/c-api/init.html#c.Py_FinalizeEx
+  // defer python3.Py_Finalize()
 
 	model, err := framework.FindModel(modelName + ":" + modelVersion)
 	if err != nil {
@@ -144,11 +153,13 @@ func runPredictGeneralCmd(c *cobra.Command, args []string) error {
 	if err != nil {
 		return errors.Wrapf(err, "cannot get absolute path of %s", inputsFilePath)
 	}
+
 	f, err := os.Open(inputsFilePath)
 	if err != nil {
 		return errors.Wrapf(err, "cannot read %s", inputsFilePath)
 	}
 	defer f.Close()
+
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -171,21 +182,24 @@ func runPredictGeneralCmd(c *cobra.Command, args []string) error {
 		inputs = append(inputs, tmp...)
 	}
 
-  _, modelManifest, err := predictor.Info()
-  if err != nil {
-    log.WithError(err).Error("can't find model manifest")
+	_, modelManifest, err := predictor.Info()
+	if err != nil {
+		log.WithError(err).Error("can't find model manifest")
 		os.Exit(-1)
-  }
+	}
 
-  beforePreprocess := strings.Split(modelManifest.GetBeforePreprocess(), " ")
-  if len(beforePreprocess) != 0 {
-    cmd := exec.Command(beforePreprocess[0], beforePreprocess[1:len(beforePreprocess)]...)
-    _, err := cmd.CombinedOutput()
-    if err != nil {
-      log.WithError(err).Error("before preprocess failed.")
-      os.Exit(-1)
-    }
-  }
+	// Not sure whether before preprocessed should be done here or just outside the program
+	/*
+	  beforePreprocess := strings.Split(modelManifest.GetBeforePreprocess(), " ")
+	  if len(beforePreprocess) != 0 {
+	    cmd := exec.Command(beforePreprocess[0], beforePreprocess[1:len(beforePreprocess)]...)
+	    _, err := cmd.CombinedOutput()
+	    if err != nil {
+	      log.WithError(err).Error("before preprocess failed.")
+	      os.Exit(-1)
+	    }
+	  }
+	*/
 
 	preprocessOptions, err := predictor.GetPreprocessOptions()
 
@@ -202,6 +216,8 @@ func runPredictGeneralCmd(c *cobra.Command, args []string) error {
 		WithField("using_gpu", useGPU).
 		Info("starting inference on inputs")
 
+	pyState := python3.PyEval_SaveThread()
+
 	if numWarmUpInputParts != 0 {
 		warmUpSpan, warmUpSpanCtx := tracer.StartSpanFromContext(
 			ctx,
@@ -213,8 +229,6 @@ func runPredictGeneralCmd(c *cobra.Command, args []string) error {
 		)
 
 		tracer.SetLevel(tracer.NO_TRACE)
-
-
 
 		for _, part := range inputParts[0:numWarmUpInputParts] {
 			input := make(chan interface{}, DefaultChannelBuffer)
@@ -238,10 +252,10 @@ func runPredictGeneralCmd(c *cobra.Command, args []string) error {
 
 			var tensors []interface{}
 			for out := range output {
-        if err, ok := out.(error); ok && failOnFirstError {
-          log.WithError(err).Error("encountered an error while performing preprocessing")
-          os.Exit(-1)
-        }
+				if err, ok := out.(error); ok && failOnFirstError {
+					log.WithError(err).Error("encountered an error while performing preprocessing")
+					os.Exit(-1)
+				}
 				tensors = append(tensors, out)
 			}
 
@@ -321,8 +335,8 @@ func runPredictGeneralCmd(c *cobra.Command, args []string) error {
 
 		var tensors []interface{}
 		for out := range output {
-      if err, ok := out.(error); ok && failOnFirstError {
-        inferenceProgress.Finish()
+			if err, ok := out.(error); ok && failOnFirstError {
+				inferenceProgress.Finish()
 
 				log.WithError(err).Error("encountered an error while performing preprocessing")
 				os.Exit(-1)
@@ -368,6 +382,8 @@ func runPredictGeneralCmd(c *cobra.Command, args []string) error {
 	tracer.ResetStd()
 
 	close(outputs)
+
+	python3.PyEval_RestoreThread(pyState)
 
 	traceID := rootSpan.Context().(jaeger.SpanContext).TraceID()
 	traceIDVal := traceID.String()

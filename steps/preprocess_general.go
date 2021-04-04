@@ -1,3 +1,5 @@
+// +build !nopython
+
 package steps
 
 import "C"
@@ -5,9 +7,9 @@ import "C"
 import (
 	"context"
 	"runtime"
-  "strconv"
+	"strconv"
 	"strings"
-  "unsafe"
+	"unsafe"
 
 	"github.com/DataDog/go-python3"
 	dl "github.com/c3sr/dlframework"
@@ -109,9 +111,9 @@ func (p *preprocessGeneral) do(ctx context.Context, in0 interface{}, pipelineOpt
 	switch elementType {
 	case "float32":
 		flattenData, err := parseDataAsFloat(shape, npDataPtr)
-    if err != nil {
-      return err
-    }
+		if err != nil {
+			return err
+		}
 
 		outTensor := tensor.New(
 			tensor.WithShape(shape...),
@@ -121,9 +123,9 @@ func (p *preprocessGeneral) do(ctx context.Context, in0 interface{}, pipelineOpt
 		return outTensor
 	case "uint8":
 		flattenData, err := parseDataAsUInt8(shape, npDataPtr)
-    if err != nil {
-      return err
-    }
+		if err != nil {
+			return err
+		}
 
 		outTensor := tensor.New(
 			tensor.WithShape(shape...),

@@ -1,3 +1,5 @@
+// +build !nopython
+
 package server
 
 import (
@@ -58,8 +60,8 @@ func runPredictGeneralCmd(c *cobra.Command, args []string) error {
 	if !python3.Py_IsInitialized() {
 		return errors.New("⚠️ Error initializing the python interpreter")
 	}
-  // See bugs and caveats https://docs.python.org/3/c-api/init.html#c.Py_FinalizeEx
-  // defer python3.Py_Finalize()
+	// See bugs and caveats https://docs.python.org/3/c-api/init.html#c.Py_FinalizeEx
+	// defer python3.Py_Finalize()
 
 	model, err := framework.FindModel(modelName + ":" + modelVersion)
 	if err != nil {

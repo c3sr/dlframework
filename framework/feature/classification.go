@@ -1,6 +1,10 @@
 package feature
 
-import "github.com/c3sr/dlframework"
+import (
+	"sort"
+
+	"github.com/c3sr/dlframework"
+)
 
 func ClassificationType() Option {
 	return Type(dlframework.FeatureType_CLASSIFICATION)
@@ -45,4 +49,27 @@ func ClassificationLabel(label string) Option {
 		cls := ensureClassification(o)
 		cls.Label = label
 	}
+}
+
+func CreateClassificationFeaturesCanonical(probabilities [][]float32, labels []string) []dlframework.Features {
+	features := make([]dlframework.Features, len(probabilities))
+
+	for i, _ := range features {
+		featureLen := len(probabilities[i])
+
+		rprobs := make([]*dlframework.Feature, featureLen)
+		for j := 0; j < featureLen; j++ {
+			rprobs[j] = New(
+				ClassificationIndex(int32(j)),
+				ClassificationLabel(labels[j]),
+				Probability(probabilities[i][j]),
+			)
+		}
+
+		res := dlframework.Features(rprobs)
+		sort.Sort(res)
+
+		features[i] = res
+	}
+	return features
 }

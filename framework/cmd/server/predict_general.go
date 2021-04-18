@@ -272,7 +272,7 @@ func runPredictGeneralCmd(c *cobra.Command, args []string) error {
 			}()
 
 			output = pipeline.New(pipeline.Context(warmUpSpanCtx), pipeline.ChannelBuffer(DefaultChannelBuffer)).
-				Then(steps.NewPredict(predictor)).
+				Then(steps.NewPredictGeneral(predictor, modelManifest.GetPostprocess())).
 				Run(input)
 
 			for o := range output {
@@ -357,7 +357,7 @@ func runPredictGeneralCmd(c *cobra.Command, args []string) error {
 		}()
 
 		output = pipeline.New(pipeline.Context(evaluateBatchCtx), pipeline.ChannelBuffer(DefaultChannelBuffer)).
-			Then(steps.NewPredict(predictor)).
+			Then(steps.NewPredictGeneral(predictor, modelManifest.GetPostprocess())).
 			Run(input)
 
 		inferenceProgress.Add(batchSize)

@@ -39,7 +39,7 @@ func NewPreprocessGeneral(options predictor.PreprocessOptions, methods string) p
 	return res
 }
 
-func (p *preprocessGeneral) do(ctx context.Context, in0 interface{}, pipelineOptions *pipeline.Options) interface{} {
+func (p preprocessGeneral) do(ctx context.Context, in0 interface{}, pipelineOptions *pipeline.Options) interface{} {
 	if opentracing.SpanFromContext(ctx) != nil {
 		span, _ := tracer.StartSpanFromContext(ctx, tracer.APPLICATION_TRACE, p.Info(), opentracing.Tags{
 			"trace_source": "steps",
@@ -101,7 +101,7 @@ func (p *preprocessGeneral) do(ctx context.Context, in0 interface{}, pipelineOpt
 
 	npDataPtr := python3.PyUnicode_AsUTF8(npDataRepr)
 
-	shape, err := parseShape(npShape)
+	shape, err := p.parseShape(npShape)
 	if err != nil {
 		return err
 	}
@@ -110,7 +110,7 @@ func (p *preprocessGeneral) do(ctx context.Context, in0 interface{}, pipelineOpt
 
 	switch elementType {
 	case "float32":
-		flattenData, err := parseDataAsFloat(shape, npDataPtr)
+		flattenData, err := p.parseDataAsFloat(shape, npDataPtr)
 		if err != nil {
 			return err
 		}
@@ -122,7 +122,7 @@ func (p *preprocessGeneral) do(ctx context.Context, in0 interface{}, pipelineOpt
 
 		return outTensor
 	case "uint8":
-		flattenData, err := parseDataAsUInt8(shape, npDataPtr)
+		flattenData, err := p.parseDataAsUInt8(shape, npDataPtr)
 		if err != nil {
 			return err
 		}
@@ -137,7 +137,7 @@ func (p *preprocessGeneral) do(ctx context.Context, in0 interface{}, pipelineOpt
 	return errors.Errorf("unsupported element type %v", elementType)
 }
 
-func parseShape(s string) (res []int, err error) {
+func (p preprocessGeneral) parseShape(s string) (res []int, err error) {
 	for i := 0; i < len(s); i++ {
 		if s[i] < '0' || s[i] > '9' {
 			continue
@@ -156,7 +156,7 @@ func parseShape(s string) (res []int, err error) {
 	return res, err
 }
 
-func parseDataAsFloat(shape []int, s string) ([]float32, error) {
+func (p preprocessGeneral) parseDataAsFloat(shape []int, s string) ([]float32, error) {
 	sz := 1
 	for _, v := range shape {
 		sz *= v
@@ -175,7 +175,7 @@ func parseDataAsFloat(shape []int, s string) ([]float32, error) {
 	return res, nil
 }
 
-func parseDataAsUInt8(shape []int, s string) ([]uint8, error) {
+func (p preprocessGeneral) parseDataAsUInt8(shape []int, s string) ([]uint8, error) {
 	sz := 1
 	for _, v := range shape {
 		sz *= v

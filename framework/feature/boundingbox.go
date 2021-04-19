@@ -1,6 +1,10 @@
 package feature
 
-import "github.com/c3sr/dlframework"
+import (
+	"sort"
+
+	"github.com/c3sr/dlframework"
+)
 
 func BoundingBoxType() Option {
 	return Type(dlframework.FeatureType_BOUNDINGBOX)
@@ -72,4 +76,34 @@ func BoundingBoxLabel(label string) Option {
 		bbox := ensureBoundingBox(o)
 		bbox.Label = label
 	}
+}
+
+func CreateBoundingBoxFeaturesCanonical(probabilities [][]float32, classes [][]float32, boxes [][][4]float32, labels []string) []dlframework.Features {
+	features := make([]dlframework.Features, len(probabilities))
+
+	for i, _ := range features {
+		featureLen := len(probabilities[i])
+
+		rprobs := make([]*dlframework.Feature, featureLen)
+
+		for j := 0; j < featureLen; j++ {
+			rprobs[j] = New(
+				BoundingBoxType(),
+				BoundingBoxXmin(boxes[i][j][1]),
+				BoundingBoxXmax(boxes[i][j][3]),
+				BoundingBoxYmin(boxes[i][j][0]),
+				BoundingBoxYmax(boxes[i][j][2]),
+				BoundingBoxIndex(int32(classes[i][j])),
+				BoundingBoxLabel(labels[int32(classes[i][j])]),
+				Probability(probabilities[i][j]),
+			)
+		}
+
+		res := dlframework.Features(rprobs)
+		sort.Sort(res)
+
+		features[i] = res
+	}
+
+	return features
 }

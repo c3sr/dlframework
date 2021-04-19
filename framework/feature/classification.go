@@ -71,5 +71,6 @@ func CreateClassificationFeaturesCanonical(probabilities [][]float32, labels []s
 
 		features[i] = res
 	}
+
 	return features
 }

@@ -218,15 +218,15 @@ func (p predictGeneral) postprocess(ctx context.Context, in0 interface{}) interf
 			return errors.Errorf("unable to cast to []string in %v step", p.info)
 		}
 		features = p.convertImageClassification(pyOutputs, labels)
-	// case dl.ImageObjectDetectionModality:
-	// 	if _, exist := table["labels"]; !exist {
-	// 		return errors.Errorf("labels is not a key in %v step", p.info)
-	// 	}
-	// 	labels, ok := (table["labels"]).([]string)
-	// 	if !ok {
-	// 		return errors.Errorf("unable to cast to []string in %v step", p.info)
-	// 	}
-	// 	features = p.convertImageObjectDetection(pyOutputs, labels)
+	case dl.ImageObjectDetectionModality:
+		if _, exist := table["labels"]; !exist {
+			return errors.Errorf("labels is not a key in %v step", p.info)
+		}
+		labels, ok := (table["labels"]).([]string)
+		if !ok {
+			return errors.Errorf("unable to cast to []string in %v step", p.info)
+		}
+		features = p.convertImageObjectDetection(pyOutputs, labels)
 	// case dl.ImageInstanceSegmentationModality:
 	// 	if _, exist := table["labels"]; !exist {
 	// 		return errors.Errorf("labels is not a key in %v step", p.info)
@@ -262,19 +262,19 @@ func (p predictGeneral) postprocess(ctx context.Context, in0 interface{}) interf
 	return lst
 }
 
-// convertImageClassification expects pyOutputs to be a 2d list where the first dimension is batchsize
-// and the second dimension is number of labels. The element is probability for each labels
+// convertImageClassification expects pyOutputs to be probabilities
+// probabilities[i][j]: probability for the i'th input to be the j'th item
 func (p predictGeneral) convertImageClassification(pyOutputs *python3.PyObject, labels []string) []dl.Features {
-  probabilities := make([][]float32, python3.PyList_Size(pyOutputs))
+	probabilities := make([][]float32, python3.PyList_Size(pyOutputs))
 	for i, _ := range probabilities {
-    // borrowed reference
+		// borrowed reference
 		cur := python3.PyList_GetItem(pyOutputs, i)
 
 		length := python3.PyList_Size(cur)
 		probabilities[i] = make([]float32, length)
 
 		for j := 0; j < length; j++ {
-      // borrowed reference
+			// borrowed reference
 			val := python3.PyList_GetItem(cur, j)
 
 			probabilities[i][j] = float32(python3.PyFloat_AsDouble(val))
@@ -282,4 +282,42 @@ func (p predictGeneral) convertImageClassification(pyOutputs *python3.PyObject, 
 	}
 
 	return feature.CreateClassificationFeaturesCanonical(probabilities, labels)
+}
+
+// convertImageObjectDetection expects pyOutputs to be a tuple, (probabilities, classes, boxes)
+// probabilities[i][j]: probability for the j'th box in the i'th input to be classes[i][j]
+// classes[i][j]: predicted class for the j'th box in the i'th input, which is the argmax among all labels
+// boxes[i][j][0:4]: bounding boxes for the j'th box in the i'th input, following (Ymin, Xmin, Ymax, Xmax) \in [0, 1]^4
+func (p predictGeneral) convertImageObjectDetection(pyOutputs *python3.PyObject, labels []string) []dl.Features {
+	// borrowed references
+	pyProb := python3.PyTuple_GetItem(pyOutputs, 0)
+	pyClass := python3.PyTuple_GetItem(pyOutputs, 1)
+	pyBox := python3.PyTuple_GetItem(pyOutputs, 2)
+
+	probabilities := make([][]float32, python3.PyList_Size(pyProb))
+	classes := make([][]float32, python3.PyList_Size(pyProb))
+	boxes := make([][][4]float32, python3.PyList_Size(pyProb))
+
+	for i, _ := range probabilities {
+		// borrowed reference
+		curProb := python3.PyList_GetItem(pyProb, i)
+		curClass := python3.PyList_GetItem(pyClass, i)
+		curBox := python3.PyList_GetItem(pyBox, i)
+
+		length := python3.PyList_Size(curProb)
+		probabilities[i] = make([]float32, length)
+		classes[i] = make([]float32, length)
+		boxes[i] = make([][4]float32, length)
+
+		for j := 0; j < length; j++ {
+			probabilities[i][j] = float32(python3.PyFloat_AsDouble(python3.PyList_GetItem(curProb, j)))
+			classes[i][j] = float32(python3.PyFloat_AsDouble(python3.PyList_GetItem(curClass, j)))
+			box := python3.PyList_GetItem(curBox, j)
+			for k := 0; k < 4; k++ {
+				boxes[i][j][k] = float32(python3.PyFloat_AsDouble(python3.PyList_GetItem(box, k)))
+			}
+		}
+	}
+
+	return feature.CreateBoundingBoxFeaturesCanonical(probabilities, classes, boxes, labels)
 }

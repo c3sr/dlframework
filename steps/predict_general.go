@@ -227,26 +227,19 @@ func (p predictGeneral) postprocess(ctx context.Context, in0 interface{}) interf
 			return errors.Errorf("unable to cast to []string in %v step", p.info)
 		}
 		features = p.convertImageObjectDetection(pyOutputs, labels)
-	// case dl.ImageInstanceSegmentationModality:
-	// 	if _, exist := table["labels"]; !exist {
-	// 		return errors.Errorf("labels is not a key in %v step", p.info)
-	// 	}
-	// 	labels, ok := (table["labels"]).([]string)
-	// 	if !ok {
-	// 		return errors.Errorf("unable to cast to []string in %v step", p.info)
-	// 	}
-	// 	features = p.convertImageInstanceSegmentation(pyOutputs, labels)
-	// case dl.ImageSemanticSegmentationModality:
-	// 	if _, exist := table["labels"]; !exist {
-	// 		return errors.Errorf("labels is not a key in %v step", p.info)
-	// 	}
-	// 	labels, ok := (table["labels"]).([]string)
-	// 	if !ok {
-	// 		return errors.Errorf("unable to cast to []string in %v step", p.info)
-	// 	}
-	// 	features = p.convertImageSemanticSegmentation(pyOutputs, labels)
-	// case dl.ImageEnhancementModality:
-	// 	features = p.convertImageEnhancement(pyOutputs)
+	case dl.ImageInstanceSegmentationModality:
+		if _, exist := table["labels"]; !exist {
+			return errors.Errorf("labels is not a key in %v step", p.info)
+		}
+		labels, ok := (table["labels"]).([]string)
+		if !ok {
+			return errors.Errorf("unable to cast to []string in %v step", p.info)
+		}
+		features = p.convertImageInstanceSegmentation(pyOutputs, labels)
+	case dl.ImageSemanticSegmentationModality:
+		features = p.convertImageSemanticSegmentation(pyOutputs)
+	case dl.ImageEnhancementModality:
+		features = p.convertImageEnhancement(pyOutputs)
 	default:
 		return errors.New("unsupported modality")
 	}
@@ -320,4 +313,123 @@ func (p predictGeneral) convertImageObjectDetection(pyOutputs *python3.PyObject,
 	}
 
 	return feature.CreateBoundingBoxFeaturesCanonical(probabilities, classes, boxes, labels)
+}
+
+// convertImageSemanticSegmentation expects pyOutputs to be a 3D masks[B][H][W]
+// masks[i][j][k]: mask for the i'th image at coordinate (j, k)
+func (p predictGeneral) convertImageSemanticSegmentation(pyOutputs *python3.PyObject) []dl.Features {
+	masks := make([][][]int64, python3.PyList_Size(pyOutputs))
+
+	for i, _ := range masks {
+		// borrowed reference
+		cur := python3.PyList_GetItem(pyOutputs, i)
+
+		height := python3.PyList_Size(cur)
+		masks[i] = make([][]int64, height)
+
+		for j := 0; j < height; j++ {
+			// borrowed reference
+			curRow := python3.PyList_GetItem(cur, j)
+			width := python3.PyList_Size(curRow)
+			masks[i][j] = make([]int64, width)
+
+			for k := 0; k < width; k++ {
+				// borrowed reference
+				val := python3.PyList_GetItem(cur, k)
+				masks[i][j][k] = int64(python3.PyFloat_AsDouble(val))
+			}
+		}
+	}
+
+	return feature.CreateSemanticSegmentFeaturesCanonical(masks)
+}
+
+// convertImageEnhancement expects pyOutputs to be a 4D list images[B][H][W][C]
+// images[i][j][k][l]: pixel for the i'th image at channel l at coordinate (j, k)
+func (p predictGeneral) convertImageEnhancement(pyOutputs *python3.PyObject) []dl.Features {
+	images := make([][][][]float32, python3.PyList_Size(pyOutputs))
+
+	for i, _ := range images {
+		// borrowed reference
+		curImage := python3.PyList_GetItem(pyOutputs, i)
+		height := python3.PyList_Size(curImage)
+		images[i] = make([][][]float32, height)
+
+		for j := 0; j < height; j++ {
+			// borrowed reference
+			curH := python3.PyList_GetItem(curImage, j)
+			width := python3.PyList_Size(curH)
+			images[i][j] = make([][]float32, width)
+
+			for k := 0; k < width; k++ {
+				// borrowed reference
+				curW := python3.PyList_GetItem(curH, k)
+				channel := python3.PyList_Size(curW)
+				images[i][j][k] = make([]float32, channel)
+
+				for l := 0; l < channel; l++ {
+					val := python3.PyList_GetItem(curW, l)
+					images[i][j][k][l] = float32(python3.PyFloat_AsDouble(val))
+				}
+			}
+		}
+	}
+
+	return feature.CreateRawImageFeaturesCanonical(images)
+}
+
+// convertImageInstanceSegmentation expects pyOutputs to be a tuple, (probabilities, classes, boxes, masks)
+// probabilities[i][j]: probability for the j'th box in the i'th input to be classes[i][j]
+// classes[i][j]: predicted class for the j'th box in the i'th input, which is the argmax among all labels
+// boxes[i][j][0:4]: bounding boxes for the j'th box in the i'th input, following (Ymin, Xmin, Ymax, Xmax) \in ([0, H) or [0, W))^4
+// masks[i][j][k][l]: masks for the j'th item in the i'th input at coordinate (k, l) in the box
+func (p predictGeneral) convertImageInstanceSegmentation(pyOutputs *python3.PyObject, labels []string) []dl.Features {
+	// borrowed references
+	pyProb := python3.PyTuple_GetItem(pyOutputs, 0)
+	pyClass := python3.PyTuple_GetItem(pyOutputs, 1)
+	pyBox := python3.PyTuple_GetItem(pyOutputs, 2)
+	pyMask := python3.PyTuple_GetItem(pyOutputs, 3)
+
+	probabilities := make([][]float32, python3.PyList_Size(pyProb))
+	classes := make([][]float32, python3.PyList_Size(pyProb))
+	boxes := make([][][4]float32, python3.PyList_Size(pyProb))
+	masks := make([][][][]float32, python3.PyList_Size(pyProb))
+
+	for i, _ := range probabilities {
+		// borrowed reference
+		curProb := python3.PyList_GetItem(pyProb, i)
+		curClass := python3.PyList_GetItem(pyClass, i)
+		curBox := python3.PyList_GetItem(pyBox, i)
+		curMask := python3.PyList_GetItem(pyMask, i)
+
+		length := python3.PyList_Size(curProb)
+		probabilities[i] = make([]float32, length)
+		classes[i] = make([]float32, length)
+		boxes[i] = make([][4]float32, length)
+		masks[i] = make([][][]float32, length)
+
+		for j := 0; j < length; j++ {
+			probabilities[i][j] = float32(python3.PyFloat_AsDouble(python3.PyList_GetItem(curProb, j)))
+			classes[i][j] = float32(python3.PyFloat_AsDouble(python3.PyList_GetItem(curClass, j)))
+			box := python3.PyList_GetItem(curBox, j)
+			for k := 0; k < 4; k++ {
+				boxes[i][j][k] = float32(python3.PyFloat_AsDouble(python3.PyList_GetItem(box, k)))
+			}
+			mask := python3.PyList_GetItem(curMask, j)
+			height := python3.PyList_Size(mask)
+			masks[i][j] = make([][]float32, height)
+
+			for k := 0; k < height; k++ {
+				cur := python3.PyList_GetItem(mask, k)
+				width := python3.PyList_Size(cur)
+				masks[i][j][k] = make([]float32, width)
+
+				for l := 0; l < width; l++ {
+					masks[i][j][k][l] = float32(python3.PyFloat_AsDouble(python3.PyList_GetItem(cur, l)))
+				}
+			}
+		}
+	}
+
+	return feature.CreateInstanceSegmentFeaturesCanonical(probabilities, classes, boxes, masks, labels)
 }

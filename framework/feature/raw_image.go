@@ -117,3 +117,36 @@ func RawImageData(data interface{}) Option {
 	}
 	panic("invalid RawImageData type")
 }
+
+func CreateRawImageFeaturesCanonical(images [][][][]float32) []dlframework.Features {
+	features := make([]dlframework.Features, len(images))
+
+	for i, _ := range features {
+		cur := images[i]
+		height := len(cur)
+		width := len(cur[0])
+		channels := len(cur[0][0])
+
+		pixels := make([]float32, height*width*channels)
+
+		for h := 0; h < height; h++ {
+			for w := 0; w < width; w++ {
+				for c := 0; c < channels; c++ {
+					pixels[h*width*channels+w*channels+c] = cur[h][w][c]
+				}
+			}
+		}
+
+		features[i] = dlframework.Features{
+			New(
+				RawImageType(),
+				RawImageWidth(width),
+				RawImageHeight(height),
+				RawImageChannels(channels),
+				RawImageData(pixels),
+			),
+		}
+	}
+
+	return features
+}

@@ -21,6 +21,7 @@ require (
 	github.com/c3sr/config v1.0.1
 	github.com/c3sr/database v1.0.0
 	github.com/c3sr/downloadmanager v1.0.0
+	github.com/c3sr/go-python3 v0.0.0-20210424014611-ae173b2e6908
 	github.com/c3sr/grpc v1.0.0
 	github.com/c3sr/image v1.0.0
 	github.com/c3sr/libkv v1.0.0

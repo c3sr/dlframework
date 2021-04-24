@@ -45,6 +45,7 @@ var (
 	gpuDeviceId                int
 	timeoutOptionSet           bool
 	saveInferenceResult        bool
+  duplicateInput             int
 )
 
 var predictCmd = &cobra.Command{
@@ -96,9 +97,9 @@ func init() {
 	predictCmd.PersistentFlags().IntVarP(&batchSize, "batch_size", "b", 1, "the batch size to use while performing inference")
 	predictCmd.PersistentFlags().StringVar(&gpuMetrics, "gpu_metrics", "", "the gpu metrics to capture. Currently only metrics from events of the same event group are supported at a time. For example, specify either `flop_count_sp` or `dram_read_bytes,dram_write_bytes` each time.")
 	predictCmd.PersistentFlags().BoolVar(&useGPU, "use_gpu", false, "whether to enable the gpu. An error is returned if the gpu is not available")
-	predictCmd.PersistentFlags().BoolVar(&tracePreprocess, "trace_preprocess", false, "whether to trace the preproessing steps. By defatult it is set to true")
+	predictCmd.PersistentFlags().BoolVar(&tracePreprocess, "trace_preprocess", true, "whether to trace the preproessing steps. By default it is set to true")
 	predictCmd.PersistentFlags().BoolVar(&disableFrameworkAutoTuning, "disable_autotune", false, "whether to disable the framework autotuning. By defatult it is set to false")
-	predictCmd.PersistentFlags().BoolVar(&failOnFirstError, "fail_on_error", false, "turning on causes the process to terminate/exit upon first inference error. This is useful since some inferences will result in an error because they run out of memory")
+	predictCmd.PersistentFlags().BoolVar(&failOnFirstError, "fail_on_error", true, "turning on causes the process to terminate/exit upon first inference error. This is useful since some inferences will result in an error because they run out of memory")
 	predictCmd.PersistentFlags().BoolVar(&publishToDatabase, "publish", false, "whether to publish the evaluation to database. Turning this off will not publish anything to the database. This is ideal for using carml within profiling tools or performing experiments where the terminal output is sufficient.")
 	predictCmd.PersistentFlags().BoolVar(&publishPredictions, "publish_predictions", false, "whether to publish prediction results to database. This will store all the probability outputs for the evaluation in the database which could be a few gigabytes of data for one dataset")
 	predictCmd.PersistentFlags().StringVar(&traceLevelName, "trace_level", traceLevel.String(), "the trace level to use while performing evaluations")
@@ -109,10 +110,12 @@ func init() {
 	predictCmd.PersistentFlags().IntVar(&gpuDeviceId, "gpu_device_id", 0, "gpu device id to pass into nvidia-smi. Defatuls to 0.")
 	predictCmd.PersistentFlags().BoolVar(&timeoutOptionSet, "time_out", true, "kill the agent after an amount of time. Defaults to be false.")
 	predictCmd.PersistentFlags().BoolVar(&saveInferenceResult, "save_inference", false, "Saving inference result affects profiling on CPU. Defaults to be false.")
+  predictCmd.PersistentFlags().IntVar(&duplicateInput, "duplicate_input", 1, "duplicate the input")
 
-//	predictCmd.AddCommand(predictDatasetCmd)
+  // predictCmd.AddCommand(predictDatasetCmd)
 	predictCmd.AddCommand(predictUrlsCmd)
-//	predictCmd.AddCommand(predictRawCmd)
+  predictCmd.AddCommand(predictGeneralCmd)
+  // predictCmd.AddCommand(predictRawCmd)
 	// predictCmd.AddCommand(predictWorkloadCmd)
 	// predictCmd.AddCommand(predictQPSCmd)
 }

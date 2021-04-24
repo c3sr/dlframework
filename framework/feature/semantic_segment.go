@@ -1,6 +1,9 @@
 package feature
 
-import "github.com/c3sr/dlframework"
+import (
+	"github.com/c3sr/dlframework"
+	"github.com/c3sr/utils"
+)
 
 func SemanticSegmentType() Option {
 	return Type(dlframework.FeatureType_SEMANTICSEGMENT)
@@ -52,4 +55,28 @@ func SemanticSegmentIntMask(mask []int32) Option {
 		sseg := ensureSemanticSegment(o)
 		sseg.IntMask = mask
 	}
+}
+
+func CreateSemanticSegmentFeaturesCanonical(masks [][][]int64) []dlframework.Features {
+	features := make([]dlframework.Features, len(masks))
+
+	for i, _ := range features {
+		featureLen := 1
+
+		rprobs := make([]*dlframework.Feature, featureLen)
+
+		for j := 0; j < featureLen; j++ {
+			rprobs[j] = New(
+				SemanticSegmentType(),
+				SemanticSegmentHeight(int32(len(masks[i]))),
+				SemanticSegmentWidth(int32(len(masks[i][0]))),
+				SemanticSegmentIntMask(utils.FlattenInt32Slice(masks[i])),
+				Probability(1.0),
+			)
+		}
+
+		features[i] = rprobs
+	}
+
+	return features
 }

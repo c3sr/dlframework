@@ -11,11 +11,11 @@ import (
 	machine "github.com/c3sr/machine/info"
 	nvidiasmi "github.com/c3sr/nvidia-smi"
 
-	"github.com/DataDog/go-python3"
 	dl "github.com/c3sr/dlframework"
 	"github.com/c3sr/dlframework/framework/feature"
 	"github.com/c3sr/dlframework/framework/options"
 	"github.com/c3sr/dlframework/framework/predictor"
+	"github.com/c3sr/go-python3"
 	"github.com/c3sr/pipeline"
 	"github.com/c3sr/tracer"
 	opentracing "github.com/opentracing/opentracing-go"

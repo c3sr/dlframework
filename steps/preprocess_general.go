@@ -11,9 +11,9 @@ import (
 	"strings"
 	"unsafe"
 
-	"github.com/DataDog/go-python3"
 	dl "github.com/c3sr/dlframework"
 	"github.com/c3sr/dlframework/framework/predictor"
+	"github.com/c3sr/go-python3"
 	"github.com/c3sr/pipeline"
 	"github.com/c3sr/tracer"
 	opentracing "github.com/opentracing/opentracing-go"

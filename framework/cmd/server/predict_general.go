@@ -17,7 +17,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/DataDog/go-python3"
 	sourcepath "github.com/GeertJohan/go-sourcepath"
 	"github.com/c3sr/archive"
 	dl "github.com/c3sr/dlframework"
@@ -26,6 +25,7 @@ import (
 	"github.com/c3sr/dlframework/framework/options"
 	common "github.com/c3sr/dlframework/framework/predictor"
 	"github.com/c3sr/dlframework/steps"
+	"github.com/c3sr/go-python3"
 	machine "github.com/c3sr/machine/info"
 	nvidiasmi "github.com/c3sr/nvidia-smi"
 	"github.com/c3sr/pipeline"

@@ -89,7 +89,11 @@ func (p preprocessGeneral) do(ctx context.Context, in0 interface{}, pipelineOpti
 
 	npShape := python3.PyUnicode_AsUTF8(npShapeRepr)
 
-	python3.PyRun_SimpleString("def contiguous(x):\n  import numpy as np\n  x = np.ascontiguousarray(x, dtype = np.float32)\n  return x.ctypes.data")
+	python3.PyRun_SimpleString(`
+def contiguous(x):
+  import numpy as np
+  x = np.ascontiguousarray(x, dtype = np.float32)
+  return x.ctypes.data`)
 
 	pyContiguous := python3.PyDict_GetItemString(pyDict, "contiguous")
 

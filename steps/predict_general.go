@@ -104,7 +104,7 @@ func (p predictGeneral) do(ctx context.Context, in0 interface{}, pipelineOpts *p
 		}
 	}
 
-	span, newCtx := tracer.StartSpanFromContext(ctx, tracer.APPLICATION_TRACE, "postprocess_general_step", predictTags)
+	span, newCtx := tracer.StartSpanFromContext(ctx, tracer.APPLICATION_TRACE, p.Info(), predictTags)
 
 	err = p.predictor.Predict(newCtx, data, options.WithOptions(opts))
 	if err != nil {
@@ -135,7 +135,7 @@ func (p predictGeneral) castToTensorType(inputs []interface{}) (interface{}, err
 
 func (p predictGeneral) postprocess(ctx context.Context, in0 interface{}) interface{} {
 	if opentracing.SpanFromContext(ctx) != nil {
-		span, _ := tracer.StartSpanFromContext(ctx, tracer.APPLICATION_TRACE, p.Info(), opentracing.Tags{
+		span, _ := tracer.StartSpanFromContext(ctx, tracer.APPLICATION_TRACE, "postprocess_general_step", opentracing.Tags{
 			"trace_source": "steps",
 			"step_name":    "postprocess_general",
 		})
@@ -170,7 +170,23 @@ func (p predictGeneral) postprocess(ctx context.Context, in0 interface{}) interf
 	pyCtx := python3.PyDict_New()
 	defer pyCtx.DecRef()
 
-	python3.PyRun_SimpleString("def convert(shape, ptr):\n  import ctypes\n  import numpy as np\n  return np.ctypeslib.as_array(ctypes.cast(ptr, ctypes.POINTER(ctypes.c_float)), shape)")
+	python3.PyRun_SimpleString(`
+def convert(shape, ptr, data_type):
+  import ctypes
+  import numpy as np
+  type_dict = {
+    'float32' : ctypes.c_float,
+    'float64' : ctypes.c_double,
+    'uint8'   : ctypes.c_uint8,
+    'uint16'  : ctypes.c_uint16,
+    'uint32'  : ctypes.c_uint32,
+    'uint64'  : ctypes.c_uint64,
+    'int8'    : ctypes.c_int8,
+    'int16'   : ctypes.c_int16,
+    'int32'   : ctypes.c_int32,
+    'int64'   : ctypes.c_int64
+  }
+  return np.ctypeslib.as_array(ctypes.cast(ptr, ctypes.POINTER(type_dict[data_type])), shape)`)
 	pyConvert := python3.PyDict_GetItemString(pyDict, "convert")
 
 	pyTensors := python3.PyList_New(0)
@@ -185,12 +201,17 @@ func (p predictGeneral) postprocess(ctx context.Context, in0 interface{}) interf
 			// The reference is stolen hence no need to DecRef
 			python3.PyTuple_SetItem(pyShapeTuple, i, cur)
 		}
-		ptr, _ := strconv.ParseUint(fmt.Sprintf("%v", &(t.Data().([]float32))[0]), 0, 64)
+
+		dType := fmt.Sprintf("%v", dense.Dtype().Type)
+    ptr, _ := strconv.ParseUint(fmt.Sprintf("%v", dense.Uintptr()), 0, 64)
 
 		pyDataPtr := python3.PyLong_FromUnsignedLongLong(ptr)
 		defer pyDataPtr.DecRef()
 
-		ret := pyConvert.CallFunctionObjArgs(pyShapeTuple, pyDataPtr)
+		pyDataType := python3.PyUnicode_FromString(dType)
+		defer pyDataType.DecRef()
+
+		ret := pyConvert.CallFunctionObjArgs(pyShapeTuple, pyDataPtr, pyDataType)
 		defer ret.DecRef()
 
 		python3.PyList_Append(pyTensors, ret)
@@ -248,7 +269,6 @@ func (p predictGeneral) postprocess(ctx context.Context, in0 interface{}) interf
 
 	lst := make([]interface{}, len(features))
 	for i := 0; i < len(features); i++ {
-		fmt.Println(features[i][0].GetProbability(), features[i][0].GetClassification().GetLabel())
 		lst[i] = features[i]
 	}
 

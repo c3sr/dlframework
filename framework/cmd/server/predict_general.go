@@ -10,7 +10,6 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	// "os/exec"
 	"path/filepath"
 	"runtime"
 	"strconv"
@@ -60,6 +59,7 @@ func runPredictGeneralCmd(c *cobra.Command, args []string) error {
 	if !python3.Py_IsInitialized() {
 		return errors.New("⚠️ Error initializing the python interpreter")
 	}
+
 	// See bugs and caveats https://docs.python.org/3/c-api/init.html#c.Py_FinalizeEx
 	// defer python3.Py_Finalize()
 
@@ -189,19 +189,6 @@ func runPredictGeneralCmd(c *cobra.Command, args []string) error {
 		log.WithError(err).Error("can't find model manifest")
 		os.Exit(-1)
 	}
-
-	// Not sure whether before preprocessed should be done here or just outside the program
-	/*
-	  beforePreprocess := strings.Split(modelManifest.GetBeforePreprocess(), " ")
-	  if len(beforePreprocess) != 0 {
-	    cmd := exec.Command(beforePreprocess[0], beforePreprocess[1:len(beforePreprocess)]...)
-	    _, err := cmd.CombinedOutput()
-	    if err != nil {
-	      log.WithError(err).Error("before preprocess failed.")
-	      os.Exit(-1)
-	    }
-	  }
-	*/
 
 	preprocessOptions, err := predictor.GetPreprocessOptions()
 

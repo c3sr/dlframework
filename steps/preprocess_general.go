@@ -8,7 +8,6 @@ import (
 	"context"
 	"runtime"
 	"strconv"
-	"strings"
 	"unsafe"
 
 	dl "github.com/c3sr/dlframework"
@@ -68,9 +67,18 @@ func (p preprocessGeneral) do(ctx context.Context, in0 interface{}, pipelineOpti
 	defer python3.PyGILState_Release(pyState)
 
 	python3.PyRun_SimpleString(p.methods)
+	python3.PyRun_SimpleString(`
+def contiguous(x):
+  import numpy as np
+  return np.ascontiguousarray(x)`)
+	python3.PyRun_SimpleString(`
+def get_address(x):
+  return x.ctypes.data`)
 	pyMain := python3.PyImport_AddModule("__main__")
 	pyDict := python3.PyModule_GetDict(pyMain)
 	pyPreprocess := python3.PyDict_GetItemString(pyDict, "preprocess")
+	pyContiguous := python3.PyDict_GetItemString(pyDict, "contiguous")
+	pyGetAddress := python3.PyDict_GetItemString(pyDict, "get_address")
 
 	pyCtx := python3.PyDict_New()
 	defer pyCtx.DecRef()
@@ -78,10 +86,13 @@ func (p preprocessGeneral) do(ctx context.Context, in0 interface{}, pipelineOpti
 	pySrc := python3.PyUnicode_FromString(src)
 	defer pySrc.DecRef()
 
-	npArray := pyPreprocess.CallFunctionObjArgs(pyCtx, pySrc)
-	defer npArray.DecRef()
+	npArrayRaw := pyPreprocess.CallFunctionObjArgs(pyCtx, pySrc)
+	defer npArrayRaw.DecRef()
 
-	npShapeObj := npArray.GetAttrString("shape")
+	npArrayContiguous := pyContiguous.CallFunctionObjArgs(npArrayRaw)
+	defer npArrayContiguous.DecRef()
+
+	npShapeObj := npArrayContiguous.GetAttrString("shape")
 	defer npShapeObj.DecRef()
 
 	npShapeRepr := npShapeObj.Repr()
@@ -89,15 +100,17 @@ func (p preprocessGeneral) do(ctx context.Context, in0 interface{}, pipelineOpti
 
 	npShape := python3.PyUnicode_AsUTF8(npShapeRepr)
 
-	python3.PyRun_SimpleString(`
-def contiguous(x):
-  import numpy as np
-  x = np.ascontiguousarray(x, dtype = np.float32)
-  return x.ctypes.data`)
+	npDtypeObj := npArrayContiguous.GetAttrString("dtype")
+	defer npDtypeObj.DecRef()
 
-	pyContiguous := python3.PyDict_GetItemString(pyDict, "contiguous")
+	npDtypeRepr := npDtypeObj.Repr()
+	defer npDtypeRepr.DecRef()
 
-	npDataObj := pyContiguous.CallFunctionObjArgs(npArray)
+	npDtype := python3.PyUnicode_AsUTF8(npDtypeRepr)
+	// npDtype = "dtype('*')"
+	npDtype = npDtype[7 : len(npDtype)-2]
+
+	npDataObj := pyGetAddress.CallFunctionObjArgs(npArrayContiguous)
 	defer npDataObj.DecRef()
 
 	npDataRepr := npDataObj.Repr()
@@ -105,40 +118,12 @@ def contiguous(x):
 
 	npDataPtr := python3.PyUnicode_AsUTF8(npDataRepr)
 
-	shape, err := p.parseShape(npShape)
+	outTensor, err := p.parseData(npShape, npDataPtr, npDtype)
 	if err != nil {
 		return err
 	}
 
-	elementType := strings.ToLower(p.options.ElementType)
-
-	switch elementType {
-	case "float32":
-		flattenData, err := p.parseDataAsFloat(shape, npDataPtr)
-		if err != nil {
-			return err
-		}
-
-		outTensor := tensor.New(
-			tensor.WithShape(shape...),
-			tensor.WithBacking(flattenData),
-		)
-
-		return outTensor
-	case "uint8":
-		flattenData, err := p.parseDataAsUInt8(shape, npDataPtr)
-		if err != nil {
-			return err
-		}
-
-		outTensor := tensor.New(
-			tensor.WithShape(shape...),
-			tensor.WithBacking(flattenData),
-		)
-		return outTensor
-	}
-
-	return errors.Errorf("unsupported element type %v", elementType)
+	return outTensor
 }
 
 func (p preprocessGeneral) parseShape(s string) (res []int, err error) {
@@ -160,40 +145,104 @@ func (p preprocessGeneral) parseShape(s string) (res []int, err error) {
 	return res, err
 }
 
-func (p preprocessGeneral) parseDataAsFloat(shape []int, s string) ([]float32, error) {
-	sz := 1
-	for _, v := range shape {
-		sz *= v
-	}
-	res := make([]float32, sz)
-
-	ptr, err := strconv.Atoi(s)
+func (p preprocessGeneral) parseData(npShape string, npDataPtr string, npDtype string) (tensor.Tensor, error) {
+	shape, err := p.parseShape(npShape)
 	if err != nil {
 		return nil, err
 	}
 
-	slice := (*[1 << 30]C.float)(unsafe.Pointer(uintptr(ptr)))[:sz:sz]
-	for i := 0; i < sz; i++ {
-		res[i] = float32(slice[i])
-	}
-	return res, nil
-}
-
-func (p preprocessGeneral) parseDataAsUInt8(shape []int, s string) ([]uint8, error) {
-	sz := 1
-	for _, v := range shape {
-		sz *= v
-	}
-	res := make([]uint8, sz)
-
-	ptr, err := strconv.Atoi(s)
+	ptr, err := strconv.Atoi(npDataPtr)
 	if err != nil {
 		return nil, err
 	}
 
-	slice := (*[1 << 30]C.float)(unsafe.Pointer(uintptr(ptr)))[:sz:sz]
-	for i := 0; i < sz; i++ {
-		res[i] = uint8(slice[i])
+	sz := 1
+	for _, v := range shape {
+		sz *= v
 	}
-	return res, nil
+
+	switch npDtype {
+	case "float32":
+		cData := (*[1 << 30]float32)(unsafe.Pointer(uintptr(ptr)))[:sz:sz]
+		data := make([]float32, sz)
+		copy(data, cData)
+		return tensor.New(
+			tensor.WithShape(shape...),
+			tensor.WithBacking(data),
+		), nil
+	case "float64":
+		cData := (*[1 << 30]float64)(unsafe.Pointer(uintptr(ptr)))[:sz:sz]
+		data := make([]float64, sz)
+		copy(data, cData)
+		return tensor.New(
+			tensor.WithShape(shape...),
+			tensor.WithBacking(data),
+		), nil
+	case "uint8":
+		cData := (*[1 << 30]uint8)(unsafe.Pointer(uintptr(ptr)))[:sz:sz]
+		data := make([]uint8, sz)
+		copy(data, cData)
+		return tensor.New(
+			tensor.WithShape(shape...),
+			tensor.WithBacking(data),
+		), nil
+	case "uint16":
+		cData := (*[1 << 30]uint16)(unsafe.Pointer(uintptr(ptr)))[:sz:sz]
+		data := make([]uint16, sz)
+		copy(data, cData)
+		return tensor.New(
+			tensor.WithShape(shape...),
+			tensor.WithBacking(data),
+		), nil
+	case "uint32":
+		cData := (*[1 << 30]uint32)(unsafe.Pointer(uintptr(ptr)))[:sz:sz]
+		data := make([]uint32, sz)
+		copy(data, cData)
+		return tensor.New(
+			tensor.WithShape(shape...),
+			tensor.WithBacking(data),
+		), nil
+	case "uint64":
+		cData := (*[1 << 30]uint64)(unsafe.Pointer(uintptr(ptr)))[:sz:sz]
+		data := make([]uint64, sz)
+		copy(data, cData)
+		return tensor.New(
+			tensor.WithShape(shape...),
+			tensor.WithBacking(data),
+		), nil
+	case "int8":
+		cData := (*[1 << 30]int8)(unsafe.Pointer(uintptr(ptr)))[:sz:sz]
+		data := make([]int8, sz)
+		copy(data, cData)
+		return tensor.New(
+			tensor.WithShape(shape...),
+			tensor.WithBacking(data),
+		), nil
+	case "int16":
+		cData := (*[1 << 30]int16)(unsafe.Pointer(uintptr(ptr)))[:sz:sz]
+		data := make([]int16, sz)
+		copy(data, cData)
+		return tensor.New(
+			tensor.WithShape(shape...),
+			tensor.WithBacking(data),
+		), nil
+	case "int32":
+		cData := (*[1 << 30]int32)(unsafe.Pointer(uintptr(ptr)))[:sz:sz]
+		data := make([]int32, sz)
+		copy(data, cData)
+		return tensor.New(
+			tensor.WithShape(shape...),
+			tensor.WithBacking(data),
+		), nil
+	case "int64":
+		cData := (*[1 << 30]int64)(unsafe.Pointer(uintptr(ptr)))[:sz:sz]
+		data := make([]int64, sz)
+		copy(data, cData)
+		return tensor.New(
+			tensor.WithShape(shape...),
+			tensor.WithBacking(data),
+		), nil
+	}
+
+	return nil, errors.Errorf("unsupported element type %v", npDtype)
 }

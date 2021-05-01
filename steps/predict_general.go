@@ -68,12 +68,12 @@ func (p predictGeneral) do(ctx context.Context, in0 interface{}, pipelineOpts *p
 	}
 
 	if opentracing.SpanFromContext(ctx) == nil {
-		errors.New("there is no parent span in the context for the predict general step")
+		return errors.New("there is no parent span in the context for the predict general step")
 	}
 
 	predictTags := opentracing.Tags{
 		"trace_source":      "steps",
-		"step_name":         "predict general",
+		"step_name":         "predict_general",
 		"model_name":        model.GetName(),
 		"model_version":     model.GetVersion(),
 		"framework_name":    framework.GetName(),

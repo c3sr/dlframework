@@ -86,44 +86,63 @@ def get_address(x):
 	pySrc := python3.PyUnicode_FromString(src)
 	defer pySrc.DecRef()
 
-	npArrayRaw := pyPreprocess.CallFunctionObjArgs(pyCtx, pySrc)
-	defer npArrayRaw.DecRef()
+	var res []tensor.Tensor
 
-	npArrayContiguous := pyContiguous.CallFunctionObjArgs(npArrayRaw)
-	defer npArrayContiguous.DecRef()
+	pyPreprocessedData := pyPreprocess.CallFunctionObjArgs(pyCtx, pySrc)
+	defer pyPreprocessedData.DecRef()
 
-	npShapeObj := npArrayContiguous.GetAttrString("shape")
-	defer npShapeObj.DecRef()
+	convertToTensor := func(npArrayRaw *python3.PyObject) (tensor.Tensor, error) {
+		npArrayContiguous := pyContiguous.CallFunctionObjArgs(npArrayRaw)
+		defer npArrayContiguous.DecRef()
 
-	npShapeRepr := npShapeObj.Repr()
-	defer npShapeRepr.DecRef()
+		npShapeObj := npArrayContiguous.GetAttrString("shape")
+		defer npShapeObj.DecRef()
 
-	npShape := python3.PyUnicode_AsUTF8(npShapeRepr)
+		npShapeRepr := npShapeObj.Repr()
+		defer npShapeRepr.DecRef()
 
-	npDtypeObj := npArrayContiguous.GetAttrString("dtype")
-	defer npDtypeObj.DecRef()
+		npShape := python3.PyUnicode_AsUTF8(npShapeRepr)
 
-	npDtypeRepr := npDtypeObj.Repr()
-	defer npDtypeRepr.DecRef()
+		npDtypeObj := npArrayContiguous.GetAttrString("dtype")
+		defer npDtypeObj.DecRef()
 
-	npDtype := python3.PyUnicode_AsUTF8(npDtypeRepr)
-	// npDtype = "dtype('*')"
-	npDtype = npDtype[7 : len(npDtype)-2]
+		npDtypeRepr := npDtypeObj.Repr()
+		defer npDtypeRepr.DecRef()
 
-	npDataObj := pyGetAddress.CallFunctionObjArgs(npArrayContiguous)
-	defer npDataObj.DecRef()
+		npDtype := python3.PyUnicode_AsUTF8(npDtypeRepr)
+		// npDtype = "dtype('*')"
+		npDtype = npDtype[7 : len(npDtype)-2]
 
-	npDataRepr := npDataObj.Repr()
-	defer npDataRepr.DecRef()
+		npDataObj := pyGetAddress.CallFunctionObjArgs(npArrayContiguous)
+		defer npDataObj.DecRef()
 
-	npDataPtr := python3.PyUnicode_AsUTF8(npDataRepr)
+		npDataRepr := npDataObj.Repr()
+		defer npDataRepr.DecRef()
 
-	outTensor, err := p.parseData(npShape, npDataPtr, npDtype)
-	if err != nil {
-		return err
+		npDataPtr := python3.PyUnicode_AsUTF8(npDataRepr)
+
+		return p.parseData(npShape, npDataPtr, npDtype)
 	}
 
-	return outTensor
+	if python3.PyTuple_Check(pyPreprocessedData) == false {
+		// Only one input
+		ten, err := convertToTensor(pyPreprocessedData)
+		if err != nil {
+			return err
+		}
+		res = append(res, ten)
+	} else {
+		// Several inputs
+		for i := 0; i < python3.PyTuple_Size(pyPreprocessedData); i++ {
+			ten, err := convertToTensor(python3.PyTuple_GetItem(pyPreprocessedData, i))
+			if err != nil {
+				return err
+			}
+			res = append(res, ten)
+		}
+	}
+
+	return res
 }
 
 func (p preprocessGeneral) parseShape(s string) (res []int, err error) {

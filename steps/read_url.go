@@ -6,11 +6,11 @@ import (
 	"io"
 	"net/http"
 
-	opentracing "github.com/opentracing/opentracing-go"
-	"github.com/pkg/errors"
 	dl "github.com/c3sr/dlframework"
 	"github.com/c3sr/pipeline"
 	"github.com/c3sr/tracer"
+	opentracing "github.com/opentracing/opentracing-go"
+	"github.com/pkg/errors"
 )
 
 type readURL struct {

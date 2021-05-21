@@ -4,13 +4,13 @@ import (
 	"context"
 	"strings"
 
-	opentracing "github.com/opentracing/opentracing-go"
-	"github.com/pkg/errors"
 	"github.com/c3sr/dlframework/framework/predictor"
 	"github.com/c3sr/image"
 	"github.com/c3sr/image/types"
 	"github.com/c3sr/pipeline"
 	"github.com/c3sr/tracer"
+	opentracing "github.com/opentracing/opentracing-go"
+	"github.com/pkg/errors"
 	"gorgonia.org/tensor"
 )
 
@@ -68,13 +68,13 @@ func (p *preprocessImage) do(ctx context.Context, in0 interface{}, pipelineOptio
 				tensor.WithShape(p.height, p.width, 3),
 				tensor.WithBacking(floats),
 			)
-			return outTensor
+			return []tensor.Tensor{outTensor}
 		} else if p.options.Layout == image.CHWLayout {
 			outTensor := tensor.New(
 				tensor.WithShape(3, p.height, p.width),
 				tensor.WithBacking(floats),
 			)
-			return outTensor
+			return []tensor.Tensor{outTensor}
 		} else {
 			errors.Errorf("expecting HWC or CHW as layout field, but got %v", p.options.Layout)
 		}

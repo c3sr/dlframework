@@ -6,12 +6,12 @@ import (
 	machine "github.com/c3sr/machine/info"
 	nvidiasmi "github.com/c3sr/nvidia-smi"
 
-	opentracing "github.com/opentracing/opentracing-go"
-	"github.com/pkg/errors"
 	"github.com/c3sr/dlframework/framework/options"
 	"github.com/c3sr/dlframework/framework/predictor"
 	"github.com/c3sr/pipeline"
 	"github.com/c3sr/tracer"
+	opentracing "github.com/opentracing/opentracing-go"
+	"github.com/pkg/errors"
 	"gorgonia.org/tensor"
 )
 
@@ -116,15 +116,28 @@ func (p predict) do(ctx context.Context, in0 interface{}, pipelineOpts *pipeline
 }
 
 func (p predict) castToTensorType(inputs []interface{}) (interface{}, error) {
-	data := make([]*tensor.Dense, len(inputs))
-	for ii, input := range inputs {
-		v, ok := input.(*tensor.Dense)
+	data := make([][]tensor.Tensor, len(inputs))
+	for i, input := range inputs {
+		v, ok := input.([]tensor.Tensor)
 		if !ok {
-			return nil, errors.Errorf("unable to cast to dense tensor in %v step", p.info)
+			return nil, errors.Errorf("unable to cast to []tensor.Tensor in %v step", p.info)
 		}
-		data[ii] = v
+		data[i] = v
 	}
-	return data, nil
+	res := make([]tensor.Tensor, len(data[0]))
+	for i, _ := range res {
+		tmp := make([]tensor.Tensor, len(inputs))
+		for j, ten := range data {
+			tmp[j] = ten[i]
+		}
+		joined, err := tensor.Concat(0, tmp[0], tmp[1:]...)
+		if err != nil {
+			return nil, errors.Errorf("unable to concat tensors in %v step", p.info)
+		}
+		joined.Reshape(append([]int{len(tmp)}, tmp[0].Shape()...)...)
+		res[i] = joined
+	}
+	return res, nil
 }
 
 func (p predict) castToElementType(inputs []interface{}) (interface{}, error) {

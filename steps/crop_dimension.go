@@ -3,13 +3,13 @@ package steps
 import (
 	"context"
 
-	"github.com/oliamb/cutter"
-	opentracing "github.com/opentracing/opentracing-go"
-	"github.com/pkg/errors"
 	"github.com/c3sr/dlframework/framework/predictor"
 	"github.com/c3sr/image/types"
 	"github.com/c3sr/pipeline"
 	"github.com/c3sr/tracer"
+	"github.com/oliamb/cutter"
+	opentracing "github.com/opentracing/opentracing-go"
+	"github.com/pkg/errors"
 )
 
 type cropDimension struct {

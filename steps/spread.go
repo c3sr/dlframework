@@ -3,9 +3,9 @@ package steps
 import (
 	"context"
 
-	"github.com/pkg/errors"
 	"github.com/c3sr/pipeline"
 	"github.com/c3sr/tracer"
+	"github.com/pkg/errors"
 )
 
 type spread struct {

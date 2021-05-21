@@ -3,12 +3,12 @@ package steps
 import (
 	"context"
 
-	"github.com/pkg/errors"
 	"github.com/c3sr/dlframework/framework/predictor"
 	"github.com/c3sr/image"
 	"github.com/c3sr/image/types"
 	"github.com/c3sr/pipeline"
 	"github.com/c3sr/tracer"
+	"github.com/pkg/errors"
 	"gorgonia.org/tensor"
 )
 

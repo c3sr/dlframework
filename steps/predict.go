@@ -130,7 +130,11 @@ func (p predict) castToTensorType(inputs []interface{}) (interface{}, error) {
 		for j, ten := range data {
 			tmp[j] = ten[i]
 		}
-		joined, err := tensor.Concat(0, tmp[0], tmp[1:]...)
+		var joined tensor.Tensor = tensor.New(tensor.Of(tmp[0].Dtype()), tensor.WithShape(tmp[0].Shape()...))
+		if err := tensor.Copy(joined, tmp[0]); err != nil {
+			return nil, err
+		}
+		joined, err := tensor.Concat(0, joined, tmp[1:]...)
 		if err != nil {
 			return nil, errors.Errorf("unable to concat tensors in %v step", p.info)
 		}

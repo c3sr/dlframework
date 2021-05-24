@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/Masterminds/semver"
-	"github.com/unknwon/com"
 	"github.com/pkg/errors"
+	"github.com/unknwon/com"
 	"golang.org/x/sync/syncmap"
 
 	"github.com/c3sr/config"
@@ -92,6 +92,8 @@ func (m *ModelManifest) Modality() (Modality, error) {
 		}
 	case "raw":
 		return RawModality, nil
+	case "general":
+		return GeneralModality, nil
 	}
 
 	panic("unhandled modality")

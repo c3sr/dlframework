@@ -1,8 +1,8 @@
 package predictor
 
 import (
-	"io"
 	"context"
+	"io"
 
 	"github.com/c3sr/dlframework"
 	"github.com/c3sr/dlframework/framework/options"
@@ -25,7 +25,7 @@ type Predictor interface {
 	Predict(ctx context.Context, data interface{}, opts ...options.Option) error
 	// Returns the features
 	ReadPredictedFeatures(ctx context.Context) ([]dlframework.Features, error)
-  // Returns the raw inference result as go tensors
+	// Returns the raw inference result as go tensors
 	ReadPredictedFeaturesAsMap(ctx context.Context) (map[string]interface{}, error)
 	// Clears the internal state of a predictor
 	Reset(ctx context.Context) error

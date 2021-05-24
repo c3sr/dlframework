@@ -63,7 +63,7 @@ func (p Features) ProbabilitiesSoftmaxFloat32() []float32 {
 	pProbs := make([]float32, p.Len())
 	accum := float32(0.0)
 	for ii := 0; ii < p.Len(); ii++ {
-    pProbs[ii] = float32(math.Exp(float64(p[ii].Probability)))
+		pProbs[ii] = float32(math.Exp(float64(p[ii].Probability)))
 		accum += pProbs[ii]
 		if float64(accum) == math.Inf(+1) {
 			pp.Println(ii, p[ii].Probability)

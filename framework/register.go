@@ -4,9 +4,9 @@ import (
 	"path/filepath"
 
 	"github.com/Masterminds/semver"
+	"github.com/c3sr/dlframework"
 	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/pkg/errors"
-	"github.com/c3sr/dlframework"
 	yaml "gopkg.in/yaml.v2"
 )
 

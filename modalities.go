@@ -9,5 +9,6 @@ const (
 	ImageInstanceSegmentationModality Modality = "image_instance_segmentation"
 	ImageSemanticSegmentationModality Modality = "image_semantic_segmentation"
 	ImageEnhancementModality          Modality = "image_enhancement"
+	GeneralModality                   Modality = "general"
 	RawModality                       Modality = "raw"
 )

@@ -278,6 +278,8 @@ def convert(shape, ptr, data_type):
 		features = p.convertImageSemanticSegmentation(pyOutputs)
 	case dl.ImageEnhancementModality:
 		features = p.convertImageEnhancement(pyOutputs)
+  case dl.GeneralModality:
+		features = p.convertGeneral(pyOutputs)
 	default:
 		return errors.New("unsupported modality")
 	}
@@ -470,3 +472,16 @@ func (p predictGeneral) convertImageInstanceSegmentation(pyOutputs *python3.PyOb
 
 	return feature.CreateInstanceSegmentFeaturesCanonical(probabilities, classes, boxes, masks, labels)
 }
+
+// convertGeneral expects a list of serialized strings
+func (p predictGeneral) convertGeneral(pyOutputs *python3.PyObject) []dl.Features {
+	text := make([][]byte, python3.PyList_Size(pyOutputs))
+	for i, _ := range text {
+		// borrowed reference
+		curText := python3.PyList_GetItem(pyOutputs, i)
+		text[i] = []byte(python3.PyUnicode_AsUTF8(curText))
+	}
+
+	return feature.CreateTextFeaturesCanonical(text)
+}
+

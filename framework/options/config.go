@@ -1,9 +1,9 @@
 package options
 
 import (
-	"github.com/k0kubun/pp/v3"
 	"github.com/c3sr/config"
 	"github.com/c3sr/vipertags"
+	"github.com/k0kubun/pp/v3"
 )
 
 type optionsConfig struct {

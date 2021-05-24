@@ -13,15 +13,15 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/k0kubun/pp/v3"
-	"github.com/oliamb/cutter"
-	"github.com/pkg/errors"
 	"github.com/c3sr/dlframework"
 	"github.com/c3sr/dlframework/framework/feature"
 	raiimage "github.com/c3sr/image"
 	"github.com/c3sr/image/types"
 	imageTypes "github.com/c3sr/image/types"
 	"github.com/c3sr/utils"
+	"github.com/k0kubun/pp/v3"
+	"github.com/oliamb/cutter"
+	"github.com/pkg/errors"
 	yaml "gopkg.in/yaml.v2"
 	gotensor "gorgonia.org/tensor"
 )
@@ -456,7 +456,7 @@ func (p ImagePredictor) GetPreprocessOptions() (PreprocessOptions, error) {
 		Layout:          p.GetLayout(raiimage.HWCLayout),
 		CropMethod:      p.GetCropMethod(cutter.Centered),
 		CropRatio:       p.GetCropRatio(1.0),
-		CropDims:       cDims,
+		CropDims:        cDims,
 	}
 
 	return preprocOpts, nil
@@ -518,55 +518,54 @@ func (p ImagePredictor) GetBackgroundIndex() (bool, int) {
 }
 
 func (p ImagePredictor) GetBoxScaling() (float32, float32) {
-  scaleWidth, scaleHeight := float32(1.0), float32(1.0)
-  model := p.Model
-	modelOutput := model.GetOutput()
-  typeParameters := modelOutput.GetParameters()
-
-	str, err := p.GetTypeParameter(typeParameters, "scale_width")
-	if err == nil {
-    val, err := strconv.Atoi(str)
-    if err == nil {
-      scaleWidth = float32(val)
-    }
-	}
-
-	str, err = p.GetTypeParameter(typeParameters, "scale_height")
-	if err == nil {
-    val, err := strconv.Atoi(str)
-    if err == nil {
-      scaleHeight = float32(val)
-    }
-  }
-
-  return scaleWidth, scaleHeight
-}
-
-func (p ImagePredictor) GetBoxIndex() ([]int) {
-  res := []int{0, 1, 2, 3}
+	scaleWidth, scaleHeight := float32(1.0), float32(1.0)
 	model := p.Model
 	modelOutput := model.GetOutput()
 	typeParameters := modelOutput.GetParameters()
 
-  indices := []string{"ymin_index", "xmin_index", "ymax_index", "xmax_index"}
+	str, err := p.GetTypeParameter(typeParameters, "scale_width")
+	if err == nil {
+		val, err := strconv.Atoi(str)
+		if err == nil {
+			scaleWidth = float32(val)
+		}
+	}
 
-  for ii, cur := range(indices) {
-    str, err := p.GetTypeParameter(typeParameters, cur)
-    if err != nil {
-      continue
-    }
+	str, err = p.GetTypeParameter(typeParameters, "scale_height")
+	if err == nil {
+		val, err := strconv.Atoi(str)
+		if err == nil {
+			scaleHeight = float32(val)
+		}
+	}
 
-    index, err := strconv.Atoi(str)
-	  if err != nil {
-		  continue
-	  }
+	return scaleWidth, scaleHeight
+}
 
-    res[ii] = index
-  }
+func (p ImagePredictor) GetBoxIndex() []int {
+	res := []int{0, 1, 2, 3}
+	model := p.Model
+	modelOutput := model.GetOutput()
+	typeParameters := modelOutput.GetParameters()
+
+	indices := []string{"ymin_index", "xmin_index", "ymax_index", "xmax_index"}
+
+	for ii, cur := range indices {
+		str, err := p.GetTypeParameter(typeParameters, cur)
+		if err != nil {
+			continue
+		}
+
+		index, err := strconv.Atoi(str)
+		if err != nil {
+			continue
+		}
+
+		res[ii] = index
+	}
 
 	return res
 }
-
 
 func (p ImagePredictor) createClassificationFeaturesBatch(ctx context.Context, probabilities []float32, labels []string) dlframework.Features {
 	featureLen := len(probabilities)
@@ -648,24 +647,24 @@ func (p ImagePredictor) CreateClassificationFeatures(ctx context.Context, probab
 }
 
 func (p ImagePredictor) createBoundingBoxFeaturesBatchUnflattened(ctx context.Context, probabilities []float32, classes []float32, boxes [][]float32, labels []string) dlframework.Features {
-  featureLen := len(probabilities)
-  flattenedBoxes := make([]float32, featureLen * 4)
-  for jj := 0; jj < featureLen; jj++ {
-    for kk := 0; kk < 4; kk++ {
-      flattenedBoxes[jj * 4 + kk] = boxes[jj][kk]
-    }
-  }
-  return p.createBoundingBoxFeaturesBatchFlattened(ctx, probabilities, classes, flattenedBoxes, labels)
+	featureLen := len(probabilities)
+	flattenedBoxes := make([]float32, featureLen*4)
+	for jj := 0; jj < featureLen; jj++ {
+		for kk := 0; kk < 4; kk++ {
+			flattenedBoxes[jj*4+kk] = boxes[jj][kk]
+		}
+	}
+	return p.createBoundingBoxFeaturesBatchFlattened(ctx, probabilities, classes, flattenedBoxes, labels)
 }
 
 func (p ImagePredictor) createBoundingBoxFeaturesBatchFlattened(ctx context.Context, probabilities []float32, classes []float32, boxes []float32, labels []string) dlframework.Features {
 	featureLen := len(probabilities)
 	rprobs := make([]*dlframework.Feature, featureLen)
-  filterBackground, backgroundIndex := p.GetBackgroundIndex()
-  boxIndex := p.GetBoxIndex()
-  boxScaleWidth, boxScaleHeight := p.GetBoxScaling()
+	filterBackground, backgroundIndex := p.GetBackgroundIndex()
+	boxIndex := p.GetBoxIndex()
+	boxScaleWidth, boxScaleHeight := p.GetBoxScaling()
 
-  cnt := 0
+	cnt := 0
 	for jj := 0; jj < featureLen; jj++ {
 		var label string
 		if probabilities[jj] < 0 {
@@ -673,19 +672,19 @@ func (p ImagePredictor) createBoundingBoxFeaturesBatchFlattened(ctx context.Cont
 		} else {
 			label = labels[int32(classes[jj])]
 		}
-    if(!filterBackground || backgroundIndex != int(classes[jj])) {
-      rprobs[cnt] = feature.New(
-        feature.BoundingBoxType(),
-        feature.BoundingBoxXmin(boxes[jj*4+boxIndex[1]] / boxScaleWidth),
-        feature.BoundingBoxXmax(boxes[jj*4+boxIndex[3]] / boxScaleWidth),
-        feature.BoundingBoxYmin(boxes[jj*4+boxIndex[0]] / boxScaleHeight),
-        feature.BoundingBoxYmax(boxes[jj*4+boxIndex[2]] / boxScaleHeight),
-        feature.BoundingBoxIndex(int32(classes[jj])),
-        feature.BoundingBoxLabel(label),
-        feature.Probability(probabilities[jj]),
-      )
-      cnt++
-    }
+		if !filterBackground || backgroundIndex != int(classes[jj]) {
+			rprobs[cnt] = feature.New(
+				feature.BoundingBoxType(),
+				feature.BoundingBoxXmin(boxes[jj*4+boxIndex[1]]/boxScaleWidth),
+				feature.BoundingBoxXmax(boxes[jj*4+boxIndex[3]]/boxScaleWidth),
+				feature.BoundingBoxYmin(boxes[jj*4+boxIndex[0]]/boxScaleHeight),
+				feature.BoundingBoxYmax(boxes[jj*4+boxIndex[2]]/boxScaleHeight),
+				feature.BoundingBoxIndex(int32(classes[jj])),
+				feature.BoundingBoxLabel(label),
+				feature.Probability(probabilities[jj]),
+			)
+			cnt++
+		}
 	}
 	res := dlframework.Features(rprobs[0:cnt])
 	sort.Sort(res)
@@ -1050,5 +1049,3 @@ func (p ImagePredictor) GetFeaturesChecksum() string {
 	}
 	return pfeats.Value
 }
-
-

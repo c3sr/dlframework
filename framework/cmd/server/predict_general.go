@@ -205,30 +205,30 @@ func runPredictGeneralCmd(c *cobra.Command, args []string) error {
 		WithField("using_gpu", useGPU).
 		Info("starting inference on inputs")
 
-	pyState := python3.PyEval_SaveThread()
+	python3.PyEval_SaveThread()
 
-  if modelManifest.GetBeforePreprocess() != "" {
-    runtime.LockOSThread()
-    pyState := python3.PyGILState_Ensure()
-    python3.PyRun_SimpleString(modelManifest.GetBeforePreprocess())
-    pyMain := python3.PyImport_AddModule("__main__")
-	  pyDict := python3.PyModule_GetDict(pyMain)
-	  pyBeforePreprocess := python3.PyDict_GetItemString(pyDict, "before_preprocess")
-    pyBeforePreprocess.CallFunctionObjArgs().DecRef()
-    python3.PyGILState_Release(pyState)
-    runtime.UnlockOSThread()
-  }
-  if modelManifest.GetBeforePostprocess() != "" {
-    runtime.LockOSThread()
-    pyState := python3.PyGILState_Ensure()
-    python3.PyRun_SimpleString(modelManifest.GetBeforePostprocess())
-    pyMain := python3.PyImport_AddModule("__main__")
-	  pyDict := python3.PyModule_GetDict(pyMain)
-	  pyBeforePostprocess := python3.PyDict_GetItemString(pyDict, "before_postprocess")
-    pyBeforePostprocess.CallFunctionObjArgs().DecRef()
-    python3.PyGILState_Release(pyState)
-    runtime.UnlockOSThread()
-  }
+	if modelManifest.GetBeforePreprocess() != "" {
+		runtime.LockOSThread()
+		pyState := python3.PyGILState_Ensure()
+		python3.PyRun_SimpleString(modelManifest.GetBeforePreprocess())
+		pyMain := python3.PyImport_AddModule("__main__")
+		pyDict := python3.PyModule_GetDict(pyMain)
+		pyBeforePreprocess := python3.PyDict_GetItemString(pyDict, "before_preprocess")
+		pyBeforePreprocess.CallFunctionObjArgs().DecRef()
+		python3.PyGILState_Release(pyState)
+		runtime.UnlockOSThread()
+	}
+	if modelManifest.GetBeforePostprocess() != "" {
+		runtime.LockOSThread()
+		pyState := python3.PyGILState_Ensure()
+		python3.PyRun_SimpleString(modelManifest.GetBeforePostprocess())
+		pyMain := python3.PyImport_AddModule("__main__")
+		pyDict := python3.PyModule_GetDict(pyMain)
+		pyBeforePostprocess := python3.PyDict_GetItemString(pyDict, "before_postprocess")
+		pyBeforePostprocess.CallFunctionObjArgs().DecRef()
+		python3.PyGILState_Release(pyState)
+		runtime.UnlockOSThread()
+	}
 
 	if numWarmUpInputParts != 0 {
 		warmUpSpan, warmUpSpanCtx := tracer.StartSpanFromContext(
@@ -395,30 +395,28 @@ func runPredictGeneralCmd(c *cobra.Command, args []string) error {
 
 	close(outputs)
 
-  if modelManifest.GetAfterPreprocess() != "" {
-    runtime.LockOSThread()
-    pyState := python3.PyGILState_Ensure()
-    python3.PyRun_SimpleString(modelManifest.GetAfterPreprocess())
-    pyMain := python3.PyImport_AddModule("__main__")
-	  pyDict := python3.PyModule_GetDict(pyMain)
-	  pyAfterPreprocess := python3.PyDict_GetItemString(pyDict, "after_preprocess")
-    pyAfterPreprocess.CallFunctionObjArgs().DecRef()
-    python3.PyGILState_Release(pyState)
-    runtime.UnlockOSThread()
-  }
-  if modelManifest.GetAfterPostprocess() != "" {
-    runtime.LockOSThread()
-    pyState := python3.PyGILState_Ensure()
-    python3.PyRun_SimpleString(modelManifest.GetAfterPostprocess())
-    pyMain := python3.PyImport_AddModule("__main__")
-	  pyDict := python3.PyModule_GetDict(pyMain)
-	  pyAfterPostprocess := python3.PyDict_GetItemString(pyDict, "after_postprocess")
-    pyAfterPostprocess.CallFunctionObjArgs().DecRef()
-    python3.PyGILState_Release(pyState)
-    runtime.UnlockOSThread()
-  }
-
-	python3.PyEval_RestoreThread(pyState)
+	if modelManifest.GetAfterPreprocess() != "" {
+		runtime.LockOSThread()
+		pyState := python3.PyGILState_Ensure()
+		python3.PyRun_SimpleString(modelManifest.GetAfterPreprocess())
+		pyMain := python3.PyImport_AddModule("__main__")
+		pyDict := python3.PyModule_GetDict(pyMain)
+		pyAfterPreprocess := python3.PyDict_GetItemString(pyDict, "after_preprocess")
+		pyAfterPreprocess.CallFunctionObjArgs().DecRef()
+		python3.PyGILState_Release(pyState)
+		runtime.UnlockOSThread()
+	}
+	if modelManifest.GetAfterPostprocess() != "" {
+		runtime.LockOSThread()
+		pyState := python3.PyGILState_Ensure()
+		python3.PyRun_SimpleString(modelManifest.GetAfterPostprocess())
+		pyMain := python3.PyImport_AddModule("__main__")
+		pyDict := python3.PyModule_GetDict(pyMain)
+		pyAfterPostprocess := python3.PyDict_GetItemString(pyDict, "after_postprocess")
+		pyAfterPostprocess.CallFunctionObjArgs().DecRef()
+		python3.PyGILState_Release(pyState)
+		runtime.UnlockOSThread()
+	}
 
 	traceID := rootSpan.Context().(jaeger.SpanContext).TraceID()
 	traceIDVal := traceID.String()

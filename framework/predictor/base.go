@@ -4,10 +4,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/pkg/errors"
 	"github.com/c3sr/dlframework"
 	"github.com/c3sr/dlframework/framework/options"
 	"github.com/c3sr/tracer"
+	"github.com/pkg/errors"
 	yaml "gopkg.in/yaml.v2"
 )
 

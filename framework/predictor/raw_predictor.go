@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/pkg/errors"
 	"github.com/c3sr/dlframework"
 	"github.com/c3sr/downloadmanager"
+	"github.com/pkg/errors"
 )
 
 const rawFileDelimiter = ","

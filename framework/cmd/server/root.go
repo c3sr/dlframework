@@ -8,12 +8,12 @@ import (
 	"syscall"
 	"time"
 
-	shutdown "github.com/klauspost/shutdown2"
 	raicmd "github.com/c3sr/cmd"
 	"github.com/c3sr/config"
 	"github.com/c3sr/dlframework"
 	"github.com/c3sr/dlframework/framework/cmd"
-//	evalcmd "github.com/c3sr/evaluation/cmd"
+	shutdown "github.com/klauspost/shutdown2"
+  evalcmd "github.com/c3sr/dlframework/evaluation/cmd"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -66,7 +66,7 @@ func SetupFlags(c *cobra.Command) {
 	c.AddCommand(downloadCmd)
 	addContainerCmd(c)
 	c.AddCommand(infoCmd)
-//	c.AddCommand(evalcmd.EvaluationCmd)
+  c.AddCommand(evalcmd.EvaluationCmd)
 	c.AddCommand(traceCmd)
 
 	c.PersistentFlags().StringVar(&cmd.CfgFile, "config", "", "config file (default is $HOME/.carml_config.yaml)")

@@ -1,7 +1,7 @@
 package server
 
 import (
-//	dllayer "github.com/c3sr/dllayer/cmd"
+	//	dllayer "github.com/c3sr/dllayer/cmd"
 	"github.com/spf13/cobra"
 )
 
@@ -11,6 +11,6 @@ var infoCmd = &cobra.Command{
 }
 
 func init() {
-//	infoCmd.AddCommand(dllayer.FlopsInfoCmd)
+	//	infoCmd.AddCommand(dllayer.FlopsInfoCmd)
 	infoCmd.AddCommand(infoModelsCmd)
 }

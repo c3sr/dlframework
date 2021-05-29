@@ -18,7 +18,10 @@ import (
 
 	sourcepath "github.com/GeertJohan/go-sourcepath"
 	"github.com/c3sr/archive"
+	"github.com/c3sr/database"
+	mongodb "github.com/c3sr/database/mongodb"
 	dl "github.com/c3sr/dlframework"
+	"github.com/c3sr/dlframework/evaluation"
 	"github.com/c3sr/dlframework/framework/agent"
 	dlcmd "github.com/c3sr/dlframework/framework/cmd"
 	"github.com/c3sr/dlframework/framework/options"
@@ -37,6 +40,7 @@ import (
 	"github.com/spf13/cobra"
 	jaeger "github.com/uber/jaeger-client-go"
 	"github.com/unknwon/com"
+	"gopkg.in/mgo.v2/bson"
 )
 
 var (
@@ -68,6 +72,47 @@ func runPredictGeneralCmd(c *cobra.Command, args []string) error {
 		return err
 	}
 	log.WithField("model", modelName).Info("running predict inputs")
+
+	if publishToDatabase == true {
+		opts := []database.Option{}
+		if len(databaseEndpoints) != 0 {
+			opts = append(opts, database.Endpoints(databaseEndpoints))
+		}
+
+		db, err = mongodb.NewDatabase(databaseName, opts...)
+		if err != nil {
+			return errors.Wrapf(err,
+				"⚠️ failed to create new database %s at %v",
+				databaseName, databaseEndpoints,
+			)
+		}
+		defer db.Close()
+
+		modelAccuracyTable, err = evaluation.NewModelAccuracyCollection(db)
+		if err != nil {
+			return err
+		}
+		defer modelAccuracyTable.Close()
+
+		inputPredictionsTable, err = evaluation.NewInputPredictionCollection(db)
+		if err != nil {
+			return err
+		}
+		defer inputPredictionsTable.Close()
+
+		evaluationTable, err = evaluation.NewEvaluationCollection(db)
+		if err != nil {
+			return err
+		}
+		defer evaluationTable.Close()
+
+		performanceTable, err = evaluation.NewPerformanceCollection(db)
+		if err != nil {
+			return err
+		}
+		defer performanceTable.Close()
+
+	}
 
 	predictors, err := agent.GetPredictors(framework)
 	if err != nil {
@@ -190,6 +235,8 @@ func runPredictGeneralCmd(c *cobra.Command, args []string) error {
 		os.Exit(-1)
 	}
 
+	inputPredictionIds := []bson.ObjectId{}
+
 	preprocessOptions, err := predictor.GetPreprocessOptions()
 
 	inputParts := dl.PartitionStringList(inputs, partitionListSize)
@@ -305,6 +352,7 @@ func runPredictGeneralCmd(c *cobra.Command, args []string) error {
 	}
 
 	hostName, _ := os.Hostname()
+  hostIP := getHostIP()
 	metadata := map[string]string{}
 	if useGPU {
 		if bts, err := json.Marshal(nvidiasmi.Info); err == nil {
@@ -498,6 +546,93 @@ func runPredictGeneralCmd(c *cobra.Command, args []string) error {
 
 		return nil
 	}
+
+  resp, err := grequests.Get(traceURL, nil)
+  if err != nil {
+    log.WithError(err).
+      WithField("trace_id", traceIDVal).
+      Error("failed to download span information")
+  }
+  log.WithField("model", modelName).WithField("trace_id", traceIDVal).WithField("traceURL", traceURL).Info("downloaded trace information")
+
+	// Dummy userID and runID hardcoded
+	// TODO read userID from manifest file
+	// calculate runID from table
+	userID := "evaluator"
+	runID := uuid.NewV4()
+
+	evaluationEntry := evaluation.Evaluation{
+		ID:                  bson.NewObjectId(),
+		UserID:              userID,
+		RunID:               runID,
+		CreatedAt:           time.Now(),
+		Framework:           *model.GetFramework(),
+		Model:               *model,
+		DatasetCategory:     "",
+		DatasetName:         "",
+		Public:              false,
+		Hostname:            hostName,
+		HostIP:              hostIP,
+		UsingGPU:            useGPU,
+		BatchSize:           batchSize,
+		GPUMetrics:          gpuMetrics,
+		TraceLevel:          traceLevel.String(),
+		MachineArchitecture: runtime.GOARCH,
+		MachineInformation:  machine.Info,
+		Metadata:            metadata,
+	}
+
+	if nvidiasmi.Info != nil {
+		evaluationEntry.GPUDriverVersion = &nvidiasmi.Info.DriverVersion
+		if useGPU {
+			evaluationEntry.GPUDevice = &gpuDeviceId
+			evaluationEntry.GPUInformation = &nvidiasmi.Info.GPUS[gpuDeviceId]
+		}
+	}
+
+	var trace evaluation.TraceInformation
+	jsonDecoder := json.NewDecoder(resp)
+	err = jsonDecoder.Decode(&trace)
+	if err != nil {
+		log.WithError(err).Error("failed to decode trace information")
+	}
+
+	performance := &evaluation.Performance{
+		ID:         bson.NewObjectId(),
+		CreatedAt:  time.Now(),
+		Trace:      nil,
+		TraceLevel: traceLevel,
+		TraceURL:   traceURL,
+	}
+
+	if err = performance.CompressTrace(); err != nil {
+		log.WithError(err).Error("failed to compress trace information")
+	}
+
+	if err := performanceTable.Insert(performance); err != nil {
+		le := log.WithError(err)
+		cause := errors.Cause(err)
+		if cause != err {
+			le = log.WithField("cause", cause.Error())
+		}
+		le.Error("failed to publish performance entry")
+	}
+
+	log.WithField("model", modelName).Info("inserted performance information")
+
+	evaluationEntry.PerformanceID = performance.ID
+	evaluationEntry.InputPredictionIDs = inputPredictionIds
+
+	if err := evaluationTable.Insert(evaluationEntry); err != nil {
+		le := log.WithError(err)
+		cause := errors.Cause(err)
+		if cause != err {
+			le = log.WithField("cause", cause.Error())
+		}
+		le.Error("failed to publish evaluation entry")
+	}
+
+	log.WithField("model", modelName).Info("inserted evaluation information")
 
 	return nil
 }

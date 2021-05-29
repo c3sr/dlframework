@@ -3,9 +3,9 @@ package server
 import (
 	"context"
 
-	"github.com/pkg/errors"
 	"github.com/c3sr/dlframework/framework/agent"
 	dlcmd "github.com/c3sr/dlframework/framework/cmd"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 )

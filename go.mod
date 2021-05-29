@@ -10,6 +10,7 @@ replace (
 go 1.15
 
 require (
+	github.com/AlekSi/pointer v1.1.0
 	github.com/GeertJohan/go-sourcepath v0.0.0-20150925135350-83e8b8723a9b
 	github.com/Masterminds/semver v1.5.0
 	github.com/VividCortex/ewma v1.1.1 // indirect
@@ -21,6 +22,7 @@ require (
 	github.com/c3sr/config v1.0.1
 	github.com/c3sr/database v1.0.0
 	github.com/c3sr/downloadmanager v1.0.0
+	github.com/c3sr/go-echarts v1.0.0
 	github.com/c3sr/go-python3 v0.0.0-20210424014611-ae173b2e6908
 	github.com/c3sr/grpc v1.0.0
 	github.com/c3sr/image v1.0.0
@@ -40,12 +42,15 @@ require (
 	github.com/c3sr/web v1.0.1
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb v1.0.29
+	github.com/chewxy/math32 v1.0.6
 	github.com/cockroachdb/cmux v0.0.0-20170110192607-30d10be49292
 	github.com/davecgh/go-spew v1.1.1
 	github.com/elazarl/go-bindata-assetfs v1.0.1
 	github.com/facebookgo/freeport v0.0.0-20150612182905-d4adf43b75b9
 	github.com/facebookgo/stack v0.0.0-20160209184415-751773369052
 	github.com/fatih/color v1.10.0
+	github.com/fatih/structs v1.1.0
+	github.com/getlantern/deepcopy v0.0.0-20160317154340-7f45deb8130a
 	github.com/glendc/go-external-ip v0.0.0-20200601212049-c872357d968e
 	github.com/go-openapi/errors v0.20.0
 	github.com/go-openapi/loads v0.20.2
@@ -61,6 +66,7 @@ require (
 	github.com/gorilla/sessions v1.2.1
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/h2non/filetype v1.1.1
+	github.com/ianlancetaylor/demangle v0.0.0-20200824232613-28f6c0f3b639
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/jinzhu/copier v0.2.8
 	github.com/justinas/nosurf v1.1.1
@@ -69,17 +75,22 @@ require (
 	github.com/labstack/echo v3.3.10+incompatible // indirect
 	github.com/labstack/echo/v4 v4.2.1
 	github.com/levigross/grequests v0.0.0-20190908174114-253788527a1a
+	github.com/mailru/easyjson v0.7.7
+	github.com/mattn/go-zglob v0.0.3
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/oliamb/cutter v0.2.2
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c // indirect
 	github.com/pkg/errors v0.9.1
+	github.com/ready-steady/sort v0.0.0-20151130154609-c3763d4578b8
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cast v1.3.1
 	github.com/spf13/cobra v1.1.3
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.7.0
+	github.com/thoas/go-funk v0.8.0
+	github.com/uber/jaeger v0.0.0-00010101000000-000000000000
 	github.com/uber/jaeger-client-go v2.25.0+incompatible
 	github.com/unknwon/com v1.0.1
 	github.com/volatiletech/authboss v2.4.1+incompatible // indirect
@@ -95,4 +106,5 @@ require (
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	gopkg.in/yaml.v2 v2.4.0
 	gorgonia.org/tensor v0.9.14
+	upper.io/db.v3 v3.8.0+incompatible
 )

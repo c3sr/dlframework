@@ -9,7 +9,7 @@ import (
 	"github.com/c3sr/config"
 	"github.com/c3sr/database"
 	"github.com/c3sr/database/mongodb"
-//	"github.com/c3sr/evaluation"
+	"github.com/c3sr/dlframework/evaluation"
 	nvidiasmi "github.com/c3sr/nvidia-smi"
 	"github.com/c3sr/tracer"
 	"github.com/c3sr/tracer/jaeger"
@@ -35,17 +35,17 @@ var (
 	databaseName               string
 	databaseEndpoints          []string
 	db                         database.Database
-//	evaluationTable            *evaluation.EvaluationCollection
-//	modelAccuracyTable         *evaluation.ModelAccuracyCollection
-//	performanceTable           *evaluation.PerformanceCollection
-//	inputPredictionsTable      *evaluation.InputPredictionCollection
+	evaluationTable            *evaluation.EvaluationCollection
+	modelAccuracyTable         *evaluation.ModelAccuracyCollection
+	performanceTable           *evaluation.PerformanceCollection
+	inputPredictionsTable      *evaluation.InputPredictionCollection
 	DefaultChannelBuffer       = 100000
 	fixTracerEndpoints         = tracerutils.FixEndpoints("http://", "9411", "/api/v1/spans")
 	baseDir                    string
 	gpuDeviceId                int
 	timeoutOptionSet           bool
 	saveInferenceResult        bool
-  duplicateInput             int
+	duplicateInput             int
 )
 
 var predictCmd = &cobra.Command{
@@ -110,12 +110,12 @@ func init() {
 	predictCmd.PersistentFlags().IntVar(&gpuDeviceId, "gpu_device_id", 0, "gpu device id to pass into nvidia-smi. Defatuls to 0.")
 	predictCmd.PersistentFlags().BoolVar(&timeoutOptionSet, "time_out", true, "kill the agent after an amount of time. Defaults to be false.")
 	predictCmd.PersistentFlags().BoolVar(&saveInferenceResult, "save_inference", false, "Saving inference result affects profiling on CPU. Defaults to be false.")
-  predictCmd.PersistentFlags().IntVar(&duplicateInput, "duplicate_input", 1, "duplicate the input")
+	predictCmd.PersistentFlags().IntVar(&duplicateInput, "duplicate_input", 1, "duplicate the input")
 
-  // predictCmd.AddCommand(predictDatasetCmd)
+	// predictCmd.AddCommand(predictDatasetCmd)
 	predictCmd.AddCommand(predictUrlsCmd)
-  predictCmd.AddCommand(predictGeneralCmd)
-  // predictCmd.AddCommand(predictRawCmd)
+	predictCmd.AddCommand(predictGeneralCmd)
+	// predictCmd.AddCommand(predictRawCmd)
 	// predictCmd.AddCommand(predictWorkloadCmd)
 	// predictCmd.AddCommand(predictQPSCmd)
 }

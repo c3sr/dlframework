@@ -5,8 +5,8 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/k0kubun/pp/v3"
 	"github.com/c3sr/tracer/convert/chrome"
+	"github.com/k0kubun/pp/v3"
 	"github.com/spf13/cobra"
 )
 

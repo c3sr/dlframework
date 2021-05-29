@@ -9,8 +9,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/k0kubun/pp/v3"
 	"github.com/c3sr/tracer/convert/flame"
+	"github.com/k0kubun/pp/v3"
 )
 
 var flameGraphCmd = &cobra.Command{

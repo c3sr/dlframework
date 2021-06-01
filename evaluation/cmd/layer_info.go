@@ -73,14 +73,12 @@ var layerInfoCmd = &cobra.Command{
 				fmt.Println("Created plot in " + plotPath)
 			}
 
-			if topLayers != -1 {
-				if topLayers != -1 {
-					if topLayers >= len(summary0) {
-						topLayers = len(summary0)
-					}
-					summary0 = summary0[:topLayers]
-				}
-			}
+      if topLayers != -1 {
+        if topLayers >= len(summary0) {
+          topLayers = len(summary0)
+        }
+        summary0 = summary0[:topLayers]
+      }
 
 			if listRuns {
 				writer := NewWriter(evaluation.SummaryLayerInformation{})

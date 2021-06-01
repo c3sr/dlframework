@@ -101,11 +101,6 @@ func rootSetup() error {
 		return err
 	}
 
-	inputPredictionCollection, err = evaluation.NewInputPredictionCollection(db)
-	if err != nil {
-		return err
-	}
-
 	if outputFormat == "" && outputFileName != "" {
 		outputFormat = filepath.Ext(outputFileName)
 	}

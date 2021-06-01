@@ -3,12 +3,20 @@ package evaluation
 import (
 	"math"
 	"sort"
+  "github.com/spf13/cast"
 )
 
 var (
 	DefaultTrimmedMeanFraction = 0.2
 	DefaultDimiter             = ";"
 )
+
+func TrimmedMeanInt64SliceToString(data []int64, frac float64) string {
+  if len(data) == 0 {
+    return ""
+  }
+	return cast.ToString(TrimmedMean(convertInt64SliceToFloat64Slice(data), frac))
+}
 
 func TrimmedMeanInt64Slice(data []int64, frac float64) float64 {
 	return TrimmedMean(convertInt64SliceToFloat64Slice(data), frac)

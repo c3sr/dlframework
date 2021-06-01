@@ -1,16 +1,16 @@
 package evaluation
 
 import (
-	json "encoding/json"
+	// json "encoding/json"
 	"errors"
 	"sort"
 	"strings"
 	"time"
 
-	"github.com/k0kubun/pp/v3"
 	"github.com/c3sr/dlframework/evaluation/writer"
 	"github.com/c3sr/go-echarts/charts"
 	"github.com/c3sr/tracer"
+	"github.com/k0kubun/pp/v3"
 	"github.com/spf13/cast"
 	model "github.com/uber/jaeger/model/json"
 )
@@ -107,14 +107,14 @@ func (s SummaryMeanLayerInformation) Row(opts ...writer.Option) []string {
 		s.Shape,
 		cast.ToString(s.Duration),
 		// strings.Join(int64SliceToStringSlice(s.Durations), DefaultDimiter),
-		cast.ToString(TrimmedMeanInt64Slice(s.AllocatedBytes, DefaultTrimmedMeanFraction)),
-		cast.ToString(TrimmedMeanInt64Slice(s.PeakAllocatedBytes, DefaultTrimmedMeanFraction)),
-		cast.ToString(TrimmedMeanInt64Slice(s.AllocatorBytesInUse, DefaultTrimmedMeanFraction)),
+		TrimmedMeanInt64SliceToString(s.AllocatedBytes, DefaultTrimmedMeanFraction),
+		TrimmedMeanInt64SliceToString(s.PeakAllocatedBytes, DefaultTrimmedMeanFraction),
+		TrimmedMeanInt64SliceToString(s.AllocatorBytesInUse, DefaultTrimmedMeanFraction),
 		s.AllocatorName,
-		cast.ToString(TrimmedMeanInt64Slice(s.HostTempMemSizes, DefaultTrimmedMeanFraction)),
-		cast.ToString(TrimmedMeanInt64Slice(s.DeviceTempMemSizes, DefaultTrimmedMeanFraction)),
-		cast.ToString(TrimmedMeanInt64Slice(s.HostPersistentMemSizes, DefaultTrimmedMeanFraction)),
-		cast.ToString(TrimmedMeanInt64Slice(s.DevicePersistentMemSizes, DefaultTrimmedMeanFraction)),
+		TrimmedMeanInt64SliceToString(s.HostTempMemSizes, DefaultTrimmedMeanFraction),
+		TrimmedMeanInt64SliceToString(s.DeviceTempMemSizes, DefaultTrimmedMeanFraction),
+		TrimmedMeanInt64SliceToString(s.HostPersistentMemSizes, DefaultTrimmedMeanFraction),
+		TrimmedMeanInt64SliceToString(s.DevicePersistentMemSizes, DefaultTrimmedMeanFraction),
 	}
 }
 
@@ -128,9 +128,10 @@ func getLayerInfoFromLayerSpan(span model.Span) SummaryLayerInformation {
 	staticType, _ := getTagValueAsString(span, "static_type")
 	allocationDesc := getAllocationDescription(span)
 	allocatorName := allocationDesc.AllocatorName
-	allocationBytes := allocationDesc.AllocatedBytes
+
 	peakAllocationBytes := []int64{}
 	allocatorBytesInUse := []int64{}
+	allocationBytes := []int64{}
 	memoryUsed, exist := getTensorFlowAllocatorMemoryUsed(span)
 	if exist {
 		m, err := cast.ToInt64E(memoryUsed.PeakBytes)
@@ -141,6 +142,7 @@ func getLayerInfoFromLayerSpan(span model.Span) SummaryLayerInformation {
 		if err == nil {
 			allocatorBytesInUse = []int64{m}
 		}
+		allocationBytes = []int64{int64(allocationDesc.AllocatedBytes)}
 	}
 	hostTempMemSizes := []int64{}
 	hostTempMemSize, err := getTagValueAsString(span, "temp_memory_size")
@@ -185,9 +187,7 @@ func getLayerInfoFromLayerSpan(span model.Span) SummaryLayerInformation {
 		Durations: []int64{
 			cast.ToInt64(span.Duration),
 		},
-		AllocatedBytes: []int64{
-			cast.ToInt64(allocationBytes),
-		},
+		AllocatedBytes:           allocationBytes,
 		PeakAllocatedBytes:       peakAllocationBytes,
 		AllocatorBytesInUse:      allocatorBytesInUse,
 		AllocatorName:            allocatorName,
@@ -217,7 +217,7 @@ func (es Evaluations) SummaryLayerInformations(perfCol *PerformanceCollection) (
 	if len(es.GroupByBatchSize()) != 1 {
 		return summary, errors.New("evaluations are not with the same batch size")
 	}
-	cPredictSpans := spans.FilterByOperationNameAndEvalTraceLevel("c_predict", tracer.FRAMEWORK_TRACE.String())
+	cPredictSpans := spans.FilterByOperationNameAndEvalTraceLevel("c_predict", tracer.MODEL_TRACE.String())
 	groupedLayerSpans, err := getGroupedLayerSpansFromSpans(cPredictSpans, spans)
 	if err != nil {
 		return summary, err
@@ -236,13 +236,11 @@ func (es Evaluations) SummaryLayerInformations(perfCol *PerformanceCollection) (
 	groupedLayerInfos := make([][]SummaryLayerInformation, numGroups)
 
 	for ii, spans := range groupedLayerSpans {
-		if groupedLayerInfos[ii] == nil {
-			groupedLayerInfos[ii] = []SummaryLayerInformation{}
-		}
+		groupedLayerInfos[ii] = []SummaryLayerInformation{}
 		for _, span := range spans {
-			if strings.HasPrefix(span.OperationName, "_") {
-				continue
-			}
+			// if strings.HasPrefix(span.OperationName, "_") {
+			// 	continue
+			// }
 			layerInfo := getLayerInfoFromLayerSpan(span)
 			groupedLayerInfos[ii] = append(groupedLayerInfos[ii], layerInfo)
 		}
@@ -291,7 +289,7 @@ func sortByLayerIndex(spans Spans) {
 func getGroupedLayerSpansFromSpans(cPredictSpans Spans, spans Spans) ([]Spans, error) {
 	groupedSpans, err := getGroupedSpansFromSpans(cPredictSpans, spans)
 	if err != nil {
-		groupedSpans = []Spans{spans}
+		return nil, err
 	}
 	numPredictSpans := len(groupedSpans)
 
@@ -376,10 +374,9 @@ func (o SummaryLayerInformations) barPlotAdd(bar *charts.Bar, elemSelector Layer
 		charts.TextStyleOpts{FontSize: DefaultSeriesFontSize},
 	)
 
-	jsLabelsBts, _ := json.Marshal(labels)
+	// jsLabelsBts, _ := json.Marshal(labels)
 	jsFun := `function (name, index) {
-	  var labels = ` + strings.Replace(string(jsLabelsBts), `"`, "'", -1) + `;
-	  return labels.indexOf(name);
+    return index;
   }`
 	bar.SetGlobalOptions(
 		charts.XAxisOpts{Name: "Layer Index", Show: false, AxisLabel: charts.LabelTextOpts{Show: true, Formatter: charts.FuncOpts(jsFun)}},
@@ -433,24 +430,14 @@ func (o SummaryLayerLatencyInformations) BoxPlot() *charts.BoxPlot {
 func (o SummaryLayerLatencyInformations) BoxPlotAdd(box *charts.BoxPlot) *charts.BoxPlot {
 	timeUnit := time.Microsecond
 
-	isPrivate := func(info SummaryLayerInformation) bool {
-		return strings.HasPrefix(info.Name, "_")
-	}
-
 	labels := []string{}
 	for _, elem := range o {
-		if isPrivate(elem) {
-			continue
-		}
 		labels = append(labels, elem.Name)
 	}
 	box.AddXAxis(labels)
 
 	durations := make([][]time.Duration, 0, len(o))
 	for _, elem := range o {
-		if isPrivate(elem) {
-			continue
-		}
 		ts := make([]time.Duration, len(elem.Durations))
 		for jj, t := range elem.Durations {
 			ts[jj] = time.Duration(t)
@@ -465,10 +452,9 @@ func (o SummaryLayerLatencyInformations) BoxPlotAdd(box *charts.BoxPlot) *charts
 	box.AddYAxis("", durations)
 	box.SetSeriesOptions(charts.LabelTextOpts{Show: false})
 
-	jsLabelsBts, _ := json.Marshal(labels)
+	// jsLabelsBts, _ := json.Marshal(labels)
 	jsFun := `function (name, index) {
-    var labels = ` + strings.Replace(string(jsLabelsBts), `"`, "'", -1) + `;
-    return labels.indexOf(name);
+    return index
   }`
 	box.SetGlobalOptions(
 		charts.XAxisOpts{

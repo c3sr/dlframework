@@ -4,9 +4,6 @@
 
 Run `./main -h` for help.
 
-To get help on a subcommand, accuracy for example, run `go run main.go accuracy -h`.
-
-
 ## Model
 
 * Model information across different batch sizes
@@ -15,21 +12,9 @@ To get help on a subcommand, accuracy for example, run `go run main.go accuracy 
 
 ## Layer
 
-* Layer information
+* Layer information / latency / memory / latency variance
 
-  ```./main layer info --database_name=$DATABASE_NAME --database_address=$DATABASE_ADDRESS --model_name=$MODEL_NAME --output=$OUTPUTFILE --batch_size=$BATCH_SIZE --format=csv```
-
-* Layer duration
-
-  ```./main layer duration --database_name=$DATABASE_NAME --database_address=$DATABASE_ADDRESS --model_name=$MODEL_NAME --output=$OUTPUTFILE --batch_size=$BATCH_SIZE --bar_plot```
-
-* Layer duration variance
-
-  ```./main layer duration --database_name=$DATABASE_NAME --database_address=$DATABASE_ADDRESS --model_name=$MODEL_NAME --output=$OUTPUTFILE --batch_size=$BATCH_SIZE --box_plot```
-
-* Layer memory
-
-  ```./main layer memory --database_name=$DATABASE_NAME --database_address=$DATABASE_ADDRESS --model_name=$MODEL_NAME --output=$OUTPUTFILE --batch_size=$BATCH_SIZE --bar_plot```
+  ```./main layer info --database_name=$DATABASE_NAME --database_address=$DATABASE_ADDRESS --model_name=$MODEL_NAME --output=$OUTPUTFILE --batch_size=$BATCH_SIZE --format=csv --plot_all```
 
 * Layer occurrence
 

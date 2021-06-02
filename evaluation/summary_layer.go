@@ -1,9 +1,10 @@
 package evaluation
 
 import (
-	// json "encoding/json"
+	"encoding/json"
 	"errors"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -250,7 +251,7 @@ func (es Evaluations) SummaryLayerInformations(perfCol *PerformanceCollection) (
 		layerInfo := li
 		for _, lis := range groupedLayerInfos[1:] {
 			for _, lli := range lis {
-				if lli.Name != li.Name || li.Index != li.Index {
+				if lli.Name != li.Name || lli.Index != li.Index {
 					continue
 				}
 				layerInfo.Durations = append(layerInfo.Durations, lli.Durations...)
@@ -359,8 +360,10 @@ type LayerInformationSelector func(elem SummaryLayerInformation) float64
 
 func (o SummaryLayerInformations) barPlotAdd(bar *charts.Bar, elemSelector LayerInformationSelector) *charts.Bar {
 	labels := []string{}
+	labelsIdx := []string{}
 	for _, elem := range o {
 		labels = append(labels, elem.Name)
+		labelsIdx = append(labelsIdx, strconv.Itoa(elem.Index))
 	}
 	bar.AddXAxis(labels)
 
@@ -374,9 +377,10 @@ func (o SummaryLayerInformations) barPlotAdd(bar *charts.Bar, elemSelector Layer
 		charts.TextStyleOpts{FontSize: DefaultSeriesFontSize},
 	)
 
-	// jsLabelsBts, _ := json.Marshal(labels)
+	jsLabelsIdxBts, _ := json.Marshal(labelsIdx)
 	jsFun := `function (name, index) {
-    return index;
+    var labels = ` + strings.Replace(string(jsLabelsIdxBts), `"`, "'", -1) + `;
+    return labels[index];
   }`
 	bar.SetGlobalOptions(
 		charts.XAxisOpts{Name: "Layer Index", Show: false, AxisLabel: charts.LabelTextOpts{Show: true, Formatter: charts.FuncOpts(jsFun)}},
@@ -429,10 +433,11 @@ func (o SummaryLayerLatencyInformations) BoxPlot() *charts.BoxPlot {
 
 func (o SummaryLayerLatencyInformations) BoxPlotAdd(box *charts.BoxPlot) *charts.BoxPlot {
 	timeUnit := time.Microsecond
-
 	labels := []string{}
+	labelsIdx := []string{}
 	for _, elem := range o {
 		labels = append(labels, elem.Name)
+		labelsIdx = append(labelsIdx, strconv.Itoa(elem.Index))
 	}
 	box.AddXAxis(labels)
 
@@ -452,9 +457,10 @@ func (o SummaryLayerLatencyInformations) BoxPlotAdd(box *charts.BoxPlot) *charts
 	box.AddYAxis("", durations)
 	box.SetSeriesOptions(charts.LabelTextOpts{Show: false})
 
-	// jsLabelsBts, _ := json.Marshal(labels)
+	jsLabelsIdxBts, _ := json.Marshal(labelsIdx)
 	jsFun := `function (name, index) {
-    return index
+    var labels = ` + strings.Replace(string(jsLabelsIdxBts), `"`, "'", -1) + `;
+    return labels[index];
   }`
 	box.SetGlobalOptions(
 		charts.XAxisOpts{

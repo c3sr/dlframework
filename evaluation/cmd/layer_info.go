@@ -4,13 +4,17 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 
 	"github.com/c3sr/dlframework/evaluation"
 	"github.com/spf13/cobra"
 )
 
 var (
-	listRuns bool
+	listRuns   bool
+	latencyBar bool
+	latencyBox bool
+	memoryBar  bool
 )
 
 var layerInfoCmd = &cobra.Command{
@@ -48,22 +52,30 @@ var layerInfoCmd = &cobra.Command{
 				return err
 			}
 
-			if plotAll {
+			summary1 := evaluation.SummaryLayerLatencyInformations(summary0)
+			if sortOutput {
+				sort.Slice(summary1, func(ii, jj int) bool {
+					return summary1[ii].Duration > summary1[jj].Duration
+				})
+			}
+
+			if plotAll || latencyBar {
 				plotPath = outputFileName + "_latency_bar.html"
-				summary1 := evaluation.SummaryLayerLatencyInformations(summary0)
 				err := summary1.WriteBarPlot(plotPath)
 				if err != nil {
 					return err
 				}
 				fmt.Println("Created plot in " + plotPath)
-
+			}
+			if plotAll || latencyBox {
 				plotPath = outputFileName + "_latency_box.html"
 				err = summary1.WriteBoxPlot(plotPath)
 				if err != nil {
 					return err
 				}
 				fmt.Println("Created plot in " + plotPath)
-
+			}
+			if plotAll || memoryBar {
 				plotPath = outputFileName + "_allocated_memory.html"
 				summary2 := evaluation.SummaryLayerAllocatedMemoryInformations(summary0)
 				err = summary2.WriteBarPlot(plotPath)
@@ -73,12 +85,12 @@ var layerInfoCmd = &cobra.Command{
 				fmt.Println("Created plot in " + plotPath)
 			}
 
-      if topLayers != -1 {
-        if topLayers >= len(summary0) {
-          topLayers = len(summary0)
-        }
-        summary0 = summary0[:topLayers]
-      }
+			if topLayers != -1 {
+				if topLayers >= len(summary0) {
+					topLayers = len(summary0)
+				}
+				summary0 = summary0[:topLayers]
+			}
 
 			if listRuns {
 				writer := NewWriter(evaluation.SummaryLayerInformation{})
@@ -86,7 +98,6 @@ var layerInfoCmd = &cobra.Command{
 				for _, v := range summary0 {
 					writer.Row(v)
 				}
-				return nil
 			}
 
 			writer := NewWriter(evaluation.SummaryMeanLayerInformation{})
@@ -103,5 +114,7 @@ var layerInfoCmd = &cobra.Command{
 
 func init() {
 	layerInfoCmd.PersistentFlags().BoolVar(&listRuns, "list_runs", false, "list evaluations")
-	layerInfoCmd.PersistentFlags().IntVar(&topLayers, "top_layers", -1, "consider only the top k layers")
+	layerInfoCmd.PersistentFlags().BoolVar(&memoryBar, "memory_bar", false, "plot allocated memory as a bar plot")
+	layerInfoCmd.PersistentFlags().BoolVar(&latencyBar, "latency_bar", false, "plot latency as a bar plot")
+	layerInfoCmd.PersistentFlags().BoolVar(&latencyBox, "latency_box", false, "plot latency as a box plot")
 }

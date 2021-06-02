@@ -1,7 +1,6 @@
 package evaluation
 
 import (
-	"encoding/json"
 	"errors"
 	"sort"
 	"strconv"
@@ -360,10 +359,8 @@ type LayerInformationSelector func(elem SummaryLayerInformation) float64
 
 func (o SummaryLayerInformations) barPlotAdd(bar *charts.Bar, elemSelector LayerInformationSelector) *charts.Bar {
 	labels := []string{}
-	labelsIdx := []string{}
 	for _, elem := range o {
-		labels = append(labels, elem.Name)
-		labelsIdx = append(labelsIdx, strconv.Itoa(elem.Index))
+		labels = append(labels, elem.Name + "@" + strconv.Itoa(elem.Index))
 	}
 	bar.AddXAxis(labels)
 
@@ -377,14 +374,16 @@ func (o SummaryLayerInformations) barPlotAdd(bar *charts.Bar, elemSelector Layer
 		charts.TextStyleOpts{FontSize: DefaultSeriesFontSize},
 	)
 
-	jsLabelsIdxBts, _ := json.Marshal(labelsIdx)
 	jsFun := `function (name, index) {
-    var labels = ` + strings.Replace(string(jsLabelsIdxBts), `"`, "'", -1) + `;
-    return labels[index];
+    return name.split('@').pop()
   }`
 	bar.SetGlobalOptions(
 		charts.XAxisOpts{Name: "Layer Index", Show: false, AxisLabel: charts.LabelTextOpts{Show: true, Formatter: charts.FuncOpts(jsFun)}},
-	)
+    charts.DataZoomOpts{
+			Type:       "slider",
+			XAxisIndex: []int{0},
+		},
+  )
 	return bar
 }
 
@@ -434,10 +433,8 @@ func (o SummaryLayerLatencyInformations) BoxPlot() *charts.BoxPlot {
 func (o SummaryLayerLatencyInformations) BoxPlotAdd(box *charts.BoxPlot) *charts.BoxPlot {
 	timeUnit := time.Microsecond
 	labels := []string{}
-	labelsIdx := []string{}
 	for _, elem := range o {
-		labels = append(labels, elem.Name)
-		labelsIdx = append(labelsIdx, strconv.Itoa(elem.Index))
+		labels = append(labels, elem.Name + "@" + strconv.Itoa(elem.Index))
 	}
 	box.AddXAxis(labels)
 
@@ -457,10 +454,8 @@ func (o SummaryLayerLatencyInformations) BoxPlotAdd(box *charts.BoxPlot) *charts
 	box.AddYAxis("", durations)
 	box.SetSeriesOptions(charts.LabelTextOpts{Show: false})
 
-	jsLabelsIdxBts, _ := json.Marshal(labelsIdx)
 	jsFun := `function (name, index) {
-    var labels = ` + strings.Replace(string(jsLabelsIdxBts), `"`, "'", -1) + `;
-    return labels[index];
+    return name.split('@').pop()
   }`
 	box.SetGlobalOptions(
 		charts.XAxisOpts{
@@ -481,8 +476,6 @@ func (o SummaryLayerLatencyInformations) BoxPlotAdd(box *charts.BoxPlot) *charts
 		charts.DataZoomOpts{
 			Type:       "slider",
 			XAxisIndex: []int{0},
-			Start:      0,
-			End:        float32(len(labels)),
 		},
 	)
 	return box

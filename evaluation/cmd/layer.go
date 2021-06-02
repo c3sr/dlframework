@@ -13,15 +13,12 @@ var layerCmd = &cobra.Command{
 	Aliases: []string{
 		"layers",
 	},
-	Short: "Get evaluation model layer analysis from framework traces in a database",
+	Short: "Get evaluation layer analysis from framework traces in a database",
 }
 
 func init() {
-	layerCmd.PersistentFlags().IntVar(&topLayers, "top_layers", -1, "consider only the top k layers ranked by duration")
+	layerCmd.PersistentFlags().IntVar(&topLayers, "top_layers", -1, "consider only the top k layers ranked by latency")
 
 	layerCmd.AddCommand(layerInfoCmd)
 	layerCmd.AddCommand(layerAggreInfoCmd)
-	layerCmd.AddCommand(layerAggreLatencyCmd)
-	layerCmd.AddCommand(layerAggreOcurrenceCmd)
-	layerCmd.AddCommand(layerAggreMemoryCmd)
 }

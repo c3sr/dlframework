@@ -22,8 +22,8 @@ func getGroupedSpansFromSpans(cPredictSpans Spans, spans Spans) ([]Spans, error)
 
 func getOpName(span model.Span) string {
 	opName, err := getTagValueAsString(span, "op_name")
-	if err != nil {
-		return ""
+	if err != nil || opName == "" {
+		return span.OperationName
 	}
 	return opName
 }

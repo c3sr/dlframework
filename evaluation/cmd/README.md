@@ -14,19 +14,7 @@ Run `./main -h` for help.
 
 * Layer information / latency / memory / latency variance
 
-  ```./main layer info --database_name=$DATABASE_NAME --database_address=$DATABASE_ADDRESS --model_name=$MODEL_NAME --output=$OUTPUTFILE --batch_size=$BATCH_SIZE --format=csv --plot_all```
-
-* Layer occurrence
-
-  ```./main layer occurrence --database_name=$DATABASE_NAME --database_address=$DATABASE_ADDRESS --model_name=$MODEL_NAME --output=$OUTPUTFILE --batch_size=$BATCH_SIZE --pie_plot```
-
-* Layer aggregated duration based on operator type
-
-  ```./main layer aggre_duration --database_name=$DATABASE_NAME --database_address=$DATABASE_ADDRESS --model_name=$MODEL_NAME --output=$OUTPUTFILE --batch_size=$BATCH_SIZE --pie_plot```
-
-* Layer theoretical flops calculation using the layer operator type and shape
-
-  TODO
+  ```./main layer info --database_name=$DATABASE_NAME --database_address=$DATABASE_ADDRESS --model_name=$MODEL_NAME --output=$OUTPUTFILE --batch_size=$BATCH_SIZE --format=csv```
 
 ## GPU
 

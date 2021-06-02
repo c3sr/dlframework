@@ -12,13 +12,11 @@ var (
 		"model":       defaultModelTraceDatabaseName,
 		"layer":       defaultFrameworkTraceDatabaseName,
 		"cuda_kernel": defaultSystemLibraryTraceDatabaseName,
-		"accuracy":    defaultAccuracyDatabaseName,
 	}
 	AllCmds = []*cobra.Command{
 		modelCmd,
 		layerCmd,
 		gpuKernelCmd,
 		eventflowCmd,
-		accuracyCmd,
 	}
 )

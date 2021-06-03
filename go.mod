@@ -30,7 +30,7 @@ require (
 	github.com/c3sr/logger v1.0.1
 	github.com/c3sr/machine v1.0.0
 	github.com/c3sr/monitoring v1.0.0
-	github.com/c3sr/nvidia-smi v1.0.1
+	github.com/c3sr/nvidia-smi v1.0.2
 	github.com/c3sr/parallel v1.0.1
 	github.com/c3sr/pipeline v1.0.0
 	github.com/c3sr/registry v1.0.0

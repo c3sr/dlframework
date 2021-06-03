@@ -189,6 +189,8 @@ github.com/c3sr/nvidia-smi v1.0.0 h1:ejEph9g0rY3QUAnmd8rm0Eb2HJhEg1j3MvoNNhDCzY8
 github.com/c3sr/nvidia-smi v1.0.0/go.mod h1:xFfv2i0Aw0+0UKpO7KkmCyhQkLf9FkDD6xbgzsxJgEc=
 github.com/c3sr/nvidia-smi v1.0.1 h1:2rlLnRgbNAYCsRHCcgI2iadgHQbbXr7Jh9WNZLMCbJg=
 github.com/c3sr/nvidia-smi v1.0.1/go.mod h1:xFfv2i0Aw0+0UKpO7KkmCyhQkLf9FkDD6xbgzsxJgEc=
+github.com/c3sr/nvidia-smi v1.0.2 h1:EAE+SvSMR/NOEwWOf0DRE0sebVi1FdDYM/3hAWNZLHY=
+github.com/c3sr/nvidia-smi v1.0.2/go.mod h1:xFfv2i0Aw0+0UKpO7KkmCyhQkLf9FkDD6xbgzsxJgEc=
 github.com/c3sr/nvml-go v1.0.0/go.mod h1:LJuCOLb0nvm4AIpdgObe7F4mbHx5qyRKtkbzYF0C3oE=
 github.com/c3sr/parallel v1.0.1 h1:3Ti2B+9piesh6ySECYOWd24MMVjjHDWh2WK1dfjD6ow=
 github.com/c3sr/parallel v1.0.1/go.mod h1:zDPGnYmqq3RunH2fNKbGwDNxI1i/8BFdqjGwYZ4yok8=

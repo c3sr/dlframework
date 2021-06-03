@@ -7,10 +7,10 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/k0kubun/pp/v3"
 	"github.com/c3sr/dlframework/evaluation/writer"
 	"github.com/c3sr/tracer"
 	trace_tree "github.com/c3sr/tracer/convert"
+	"github.com/k0kubun/pp/v3"
 	"github.com/spf13/cast"
 	model "github.com/uber/jaeger/model/json"
 )
@@ -260,8 +260,7 @@ func GetMeanLogValue(info SummaryGPUKernelInformation, name string, trimmedMeanF
 
 func GPUKernelSpantoGPUInformation(span model.Span) SummaryGPUKernelInformation {
 	info := &SummaryGPUKernelInformation{
-		Name:          mustGetTagValueAsString(span, "kernel_name"),
-		MangledName:   mustGetTagValueAsString(span, "name"),
+		Name:          mustGetTagValueAsString(span, "name"),
 		Tags:          []Metadata{},
 		Logs:          []Metadata{},
 		CorrelationId: mustGetTagValueAsInt64(span, "correlation_id"),
@@ -273,10 +272,8 @@ func GPUKernelSpantoGPUInformation(span model.Span) SummaryGPUKernelInformation 
 }
 
 func CUDALaunchSpantoGPUInformation(span model.Span) SummaryGPUKernelInformation {
-	kernelName := mustGetTagValueAsString(span, "kernel")
 	info := &SummaryGPUKernelInformation{
-		Name:          demangleName(kernelName),
-		MangledName:   kernelName,
+		Name:          mustGetTagValueAsString(span, "kernel"),
 		Tags:          []Metadata{},
 		Logs:          []Metadata{},
 		CorrelationId: mustGetTagValueAsInt64(span, "correlation_id"),
@@ -316,7 +313,7 @@ func (es Evaluations) SummaryGPUKernelLayerInformations(perfCol *PerformanceColl
 		return summary, errors.New("no span is found for the evaluation")
 	}
 
-	cPredictSpans := spans.FilterByOperationNameAndEvalTraceLevel("c_predict", tracer.SYSTEM_LIBRARY_TRACE.String())
+	cPredictSpans := spans.FilterByOperationNameAndEvalTraceLevel("c_predict", tracer.MODEL_TRACE.String())
 	groupedSpans, err := getGroupedSpansFromSpans(cPredictSpans, spans)
 	if err != nil {
 		return summary, err
@@ -357,9 +354,9 @@ func (es Evaluations) SummaryGPUKernelLayerInformations(perfCol *PerformanceColl
 			layerSpan := *layerInterval.Span
 			layerChildren := tree.ChildrenOf(layerInterval)
 
-			if strings.HasPrefix(layerSpan.OperationName, "_") {
-				continue
-			}
+			// if strings.HasPrefix(layerSpan.OperationName, "_") {
+			// 	continue
+			// }
 
 			layerInfo := SummaryLayerInformation{}
 			if len(layerInfos) == 0 {
@@ -372,9 +369,9 @@ func (es Evaluations) SummaryGPUKernelLayerInformations(perfCol *PerformanceColl
 				layerInfo = layerInfos.GetLayerInfoByName(layerSpan.OperationName)
 			}
 			// HACK: to skip "pool5-1-0-TransposeNCHWToNHWC-LayoutOptimizer" in BVLC_AlexNet_Caffe
-			if layerInfo.Shape == "" {
-				continue
-			}
+			// if layerInfo.Shape == "" {
+			// 	continue
+			// }
 			layerGPUInformation := SummaryGPUKernelLayerInformation{
 				SummaryLayerInformation:      layerInfo,
 				SummaryGPUKernelInformations: []SummaryGPUKernelInformation{},
@@ -441,7 +438,7 @@ func (es Evaluations) SummaryGPUKernelLayerInformations(perfCol *PerformanceColl
 			cki := layerGPUInfo.SummaryGPUKernelInformations[ii]
 			for _, lis := range groupedLayerGPUInfos[1:] {
 				for _, lli := range lis {
-					if lli.Name != li.Name || li.Index != li.Index {
+					if lli.Name != li.Name || li.Index != lli.Index {
 						continue
 					}
 					for _, ccki := range lli.SummaryGPUKernelInformations {
@@ -476,9 +473,4 @@ func (es Evaluations) SummaryGPUKernelLayerInformations(perfCol *PerformanceColl
 	sort.Sort(summary)
 
 	return summary, nil
-}
-
-func dummyPP() {
-	// for importing pp
-	pp.Println("dummy")
 }

@@ -17,7 +17,7 @@ var (
 var gpuKernelInfoCmd = &cobra.Command{
 	Use:     "info",
 	Aliases: []string{},
-	Short:   "Get evaluation gpu kernel information from system library traces in a database. Specify model name as `all` to list information of all the models.",
+	Short:   "Get evaluation gpu kernel information from system library traces in a database.",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		if databaseName == "" {
 			databaseName = defaultDatabaseName[cmd.Name()]

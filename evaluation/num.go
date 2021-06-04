@@ -3,18 +3,19 @@ package evaluation
 import (
 	"math"
 	"sort"
-  "github.com/spf13/cast"
+
+	"github.com/spf13/cast"
 )
 
 var (
-	DefaultTrimmedMeanFraction = 0.2
+	DefaultTrimmedMeanFraction = 0.0
 	DefaultDimiter             = ";"
 )
 
 func TrimmedMeanInt64SliceToString(data []int64, frac float64) string {
-  if len(data) == 0 {
-    return ""
-  }
+	if len(data) == 0 {
+		return ""
+	}
 	return cast.ToString(TrimmedMean(convertInt64SliceToFloat64Slice(data), frac))
 }
 
@@ -74,7 +75,7 @@ func TrimmedMean(data []float64, frac float64) float64 {
 	sort.Float64s(data)
 
 	start := maxInt(0, floor(float64(cnt)*frac))
-	end := minInt(cnt-1, cnt-floor(float64(cnt)*frac))
+	end := minInt(cnt, cnt-floor(float64(cnt)*frac))
 
 	// pp.Println("start = ", start, "   end = ", end)
 	trimmed := data[start:end]

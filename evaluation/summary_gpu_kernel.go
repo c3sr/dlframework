@@ -366,7 +366,7 @@ func (es Evaluations) SummaryGPUKernelLayerInformations(perfCol *PerformanceColl
 					pp.Println(layerSpan)
 				}
 			} else {
-				layerInfo = layerInfos.GetLayerInfoByName(layerSpan.OperationName)
+				layerInfo = layerInfos.GetLayerInfoByNameAndIndex(layerSpan.OperationName, mustGetTagValueAsInt(layerSpan, "layer_sequence_index"))
 			}
 			// HACK: to skip "pool5-1-0-TransposeNCHWToNHWC-LayoutOptimizer" in BVLC_AlexNet_Caffe
 			// if layerInfo.Shape == "" {
@@ -441,8 +441,8 @@ func (es Evaluations) SummaryGPUKernelLayerInformations(perfCol *PerformanceColl
 					if lli.Name != li.Name || li.Index != lli.Index {
 						continue
 					}
-					for _, ccki := range lli.SummaryGPUKernelInformations {
-						if cki.Name == ccki.Name {
+					for jj, ccki := range lli.SummaryGPUKernelInformations {
+						if cki.Name == ccki.Name && ii == jj {
 							cki.Tags = append(cki.Tags, ccki.Tags...)
 							cki.Logs = append(cki.Logs, ccki.Logs...)
 							cki.Durations = append(cki.Durations, ccki.Durations...)

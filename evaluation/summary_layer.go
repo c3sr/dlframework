@@ -143,6 +143,21 @@ func getLayerInfoFromLayerSpan(span model.Span) SummaryLayerInformation {
 			allocatorBytesInUse = []int64{m}
 		}
 		allocationBytes = []int64{int64(allocationDesc.AllocatedBytes)}
+	} else {
+		peakAllocationByte, err := getTagValueAsString(span, "peak_memory")
+		if err == nil && peakAllocationByte != "" {
+			m, err := cast.ToInt64E(peakAllocationByte)
+			if err == nil {
+				peakAllocationBytes = []int64{m}
+			}
+		}
+		allocationByte, err := getTagValueAsString(span, "allocated_memory")
+		if err == nil && allocationByte != "" {
+			m, err := cast.ToInt64E(allocationByte)
+			if err == nil {
+				allocationBytes = []int64{m}
+			}
+		}
 	}
 	hostTempMemSizes := []int64{}
 	hostTempMemSize, err := getTagValueAsString(span, "temp_memory_size")
@@ -327,6 +342,15 @@ func (s SummaryLayerInformations) GetLayerInfoByName(name string) SummaryLayerIn
 	return SummaryLayerInformation{}
 }
 
+func (s SummaryLayerInformations) GetLayerInfoByNameAndIndex(name string, index int) SummaryLayerInformation {
+	for _, info := range s {
+		if info.Name == name && info.Index == index {
+			return info
+		}
+	}
+	return SummaryLayerInformation{}
+}
+
 func (o SummaryLayerLatencyInformations) PlotName() string {
 	if len(o) == 0 {
 		return ""
@@ -360,7 +384,7 @@ type LayerInformationSelector func(elem SummaryLayerInformation) float64
 func (o SummaryLayerInformations) barPlotAdd(bar *charts.Bar, elemSelector LayerInformationSelector) *charts.Bar {
 	labels := []string{}
 	for _, elem := range o {
-		labels = append(labels, elem.Name + "@" + strconv.Itoa(elem.Index))
+		labels = append(labels, elem.Name+"@"+strconv.Itoa(elem.Index))
 	}
 	bar.AddXAxis(labels)
 
@@ -379,11 +403,11 @@ func (o SummaryLayerInformations) barPlotAdd(bar *charts.Bar, elemSelector Layer
   }`
 	bar.SetGlobalOptions(
 		charts.XAxisOpts{Name: "Layer Index", Show: false, AxisLabel: charts.LabelTextOpts{Show: true, Formatter: charts.FuncOpts(jsFun)}},
-    charts.DataZoomOpts{
+		charts.DataZoomOpts{
 			Type:       "slider",
 			XAxisIndex: []int{0},
 		},
-  )
+	)
 	return bar
 }
 
@@ -434,7 +458,7 @@ func (o SummaryLayerLatencyInformations) BoxPlotAdd(box *charts.BoxPlot) *charts
 	timeUnit := time.Microsecond
 	labels := []string{}
 	for _, elem := range o {
-		labels = append(labels, elem.Name + "@" + strconv.Itoa(elem.Index))
+		labels = append(labels, elem.Name+"@"+strconv.Itoa(elem.Index))
 	}
 	box.AddXAxis(labels)
 

@@ -232,7 +232,7 @@ func (es Evaluations) SummaryLayerInformations(perfCol *PerformanceCollection) (
 	if len(es.GroupByBatchSize()) != 1 {
 		return summary, errors.New("evaluations are not with the same batch size")
 	}
-	cPredictSpans := spans.FilterByOperationNameAndEvalTraceLevel("c_predict", tracer.MODEL_TRACE.String())
+	cPredictSpans := spans.FilterByOperationNameAndEvalTraceLevel("c_predict", tracer.FRAMEWORK_TRACE.String())
 	groupedLayerSpans, err := getGroupedLayerSpansFromSpans(cPredictSpans, spans)
 	if err != nil {
 		return summary, err

@@ -313,7 +313,7 @@ func (es Evaluations) SummaryGPUKernelLayerInformations(perfCol *PerformanceColl
 		return summary, errors.New("no span is found for the evaluation")
 	}
 
-	cPredictSpans := spans.FilterByOperationNameAndEvalTraceLevel("c_predict", tracer.MODEL_TRACE.String())
+	cPredictSpans := spans.FilterByOperationNameAndEvalTraceLevel("c_predict", tracer.SYSTEM_LIBRARY_TRACE.String())
 	groupedSpans, err := getGroupedSpansFromSpans(cPredictSpans, spans)
 	if err != nil {
 		return summary, err

@@ -23,7 +23,7 @@ func (spns Spans) FilterByOperationNameAndEvalTraceLevel(op string, lvl string) 
 	res := []model.Span{}
 	op = strings.ToLower(op)
 	for _, s := range spns {
-		traceLevel, err := getTagValueAsString(s, "trace_level")
+		traceLevel, err := getTagValueAsString(s, "evaluation_trace_level")
 		if err != nil || traceLevel == "" {
 			continue
 		}

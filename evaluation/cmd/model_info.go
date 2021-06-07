@@ -52,7 +52,7 @@ var modelInfoCmd = &cobra.Command{
       }
       fmt.Println("Created plot in " + plotPath)
 
-      plotPath = outputFileName + "_throughtput.html"
+      plotPath = outputFileName + "_throughput.html"
       summary2 := evaluation.SummaryModelThroughputInformations(summary0)
       err = summary2.WriteBarPlot(plotPath)
       if err != nil {

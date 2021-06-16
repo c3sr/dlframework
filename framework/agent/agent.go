@@ -19,7 +19,7 @@ import (
 	"github.com/c3sr/tracer"
 	"github.com/c3sr/utils"
 	"github.com/c3sr/uuid"
-	jaeger "github.com/uber/jaeger-client-go"
+	jaeger "github.com/jaegertracing/jaeger-client-go"
 	"golang.org/x/sync/syncmap"
 	"google.golang.org/grpc"
 

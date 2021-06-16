@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/VividCortex/robustly"
-	"github.com/cockroachdb/cmux"
+	"github.com/soheilhy/cmux"
 	"github.com/facebookgo/freeport"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"

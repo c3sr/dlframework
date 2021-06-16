@@ -19,7 +19,7 @@ import (
 	"github.com/c3sr/tracer"
 	jaeger "github.com/c3sr/tracer/jaeger"
 	"github.com/spf13/cobra"
-	jaegerclient "github.com/uber/jaeger-client-go"
+	jaegerclient "github.com/jaegertracing/jaeger-client-go"
 
 	"google.golang.org/grpc"
 )

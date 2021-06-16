@@ -35,7 +35,7 @@ import (
 	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	jaeger "github.com/uber/jaeger-client-go"
+	jaeger "github.com/jaegertracing/jaeger-client-go"
 	"github.com/unknwon/com"
 )
 

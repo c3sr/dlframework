@@ -31,7 +31,7 @@ import (
 	"github.com/c3sr/tracer"
 	"github.com/c3sr/uuid"
 	"github.com/spf13/cobra"
-	jaeger "github.com/uber/jaeger-client-go"
+	jaeger "github.com/jaegertracing/jaeger-client-go"
 	"gopkg.in/mgo.v2/bson"
 )
 

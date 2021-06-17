@@ -28,7 +28,7 @@ require (
 	github.com/c3sr/pipeline v1.0.0
 	github.com/c3sr/registry v1.0.1
 	github.com/c3sr/serializer v1.0.0
-	github.com/c3sr/tracer v1.0.3
+	github.com/c3sr/tracer v1.0.4
 	github.com/c3sr/utils v1.0.0
 	github.com/c3sr/uuid v1.0.1
 	github.com/c3sr/vipertags v1.0.0
